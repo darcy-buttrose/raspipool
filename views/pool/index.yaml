@@ -1,0 +1,15 @@
+    badges:
+      - sensor.simple_date
+      - sensor.simple_time
+    title: Pool
+    panel: false
+    icon: 'mdi:pool'
+    cards:
+      - type: vertical-stack
+        cards:
+          - !include status/index.yaml
+          - !include update-status/index.yaml
+          - !include control/index.yaml
+#          - !include supplies/index.yaml
+          - !include pump-control/index.yaml
+#          - !include flow-control/index.yaml

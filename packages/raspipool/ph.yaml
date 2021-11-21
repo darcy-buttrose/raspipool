@@ -4,15 +4,14 @@ sensor:
 #   port: /dev/ttyUSB0
 # For I2C enter the hex device id
     port: 0x63
-    scan_interval: 31536000
+    scan_interval: 30
+    # scan_interval: 31536000
     # never scan, scanning happens every 2 mins
     # *while the pump is on*
 
   - platform: statistics
     name: ph_stat
     entity_id: sensor.ezo_ph
-    max_age:
-      minutes: 60
 
   - platform: template
     sensors:
@@ -60,9 +59,9 @@ automation:
     trigger:
     - platform: numeric_state
       entity_id: sensor.ph
-      above: 7.5
+      above: 7.6
       for:
-        hours: 48
+        hours: 24
     condition: []
     action:
     - data_template:
@@ -74,9 +73,9 @@ automation:
     trigger:
     - platform: numeric_state
       entity_id: sensor.ph
-      below: 6.9
+      below: 7.2
       for:
-        hours: 48
+        hours: 24
     condition: []
     action:
     - data_template:

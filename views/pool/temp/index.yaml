@@ -1,0 +1,4 @@
+            title: Tempurature
+            type: horizontal-stack
+            cards:
+              - !include pool-temp/index.yaml

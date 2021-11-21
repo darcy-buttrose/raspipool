@@ -1,0 +1,11 @@
+                max: 10
+                min: 0
+                theme: Backend-selected
+                entity: sensor.ph
+                needle: true
+                severity:
+                  yellow: 5
+                  green: 7
+                  red: 0
+                name: pH
+                type: gauge

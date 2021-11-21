@@ -1,0 +1,64 @@
+    badges: []
+    title: Chemical
+    icon: 'mdi:flask'
+    cards:
+      - title: Muriatic Acid ( decrease pH )
+        entities:
+          - row:
+            entity: input_number.muriatic_tank
+            theme: default
+            name: Tank Level (l)
+          - entity: input_number.muriatic_concentration
+            name: Concentration (%)
+          - row:
+            entity: input_number.muriatic_speed
+            theme: default
+            unit: ml/min
+            name: Injection Speed (ml/min)
+          - entity: switch.ph
+            name: Acid Injection Pump
+            secondary_info: last-changed
+          - entity: input_boolean.lock_muriatic
+            name: Disable Automatic Injection
+        type: entities
+        show_header_toggle: false
+      - type: conditional
+        conditions:
+          - entity: input_boolean.salt_system
+            state_not: "on"
+        card:
+          title: Sanitizer ( increase ORP )
+          entities:
+            - row:
+              entity: input_number.bleach_tank
+              theme: default
+              unit: l
+              name: Tank Level (l)
+            - entity: input_number.bleach_concentration
+              name: Concentration (%)
+            - row:
+              entity: input_number.bleach_speed
+              theme: default
+              unit: ml/min
+              name: Injection Speed (ml/min)
+            - entity: switch.orp
+              name: Chlorine Injection Pump
+              secondary_info: last-changed
+            - entity: input_boolean.lock_bleach
+              name: Disable Automatic Injection
+          type: entities
+          show_empty: false
+          show_header_toggle: false
+      - type: conditional
+        conditions:
+          - entity: input_boolean.salt_system
+            state: "on"
+        card:
+          title: Salt System ( increase ORP )
+          entities:
+            - entity: input_number.bleach_concentration
+              name: Concentration (%)
+            - entity: input_number.bleach_speed
+              name: Speed injection
+          type: entities
+          show_header_toggle: false

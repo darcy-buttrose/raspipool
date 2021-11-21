@@ -4,13 +4,12 @@ recorder:
   include:
     entities:
       - sensor.pump_state
-      - sensor.pool_temp
-      - sensor.pool_temp_fahrenheit
       - sensor.orp
       - sensor.ph
-      - sensor.pool_water_temperature
+      - sensor.pool_temp
       - sensor.ezo_ph
       - sensor.ezo_orp
+      - sensor.ezo_tempurature
       - sensor.remain_cycles
       - input_number.muriatic_tank
       - input_number.bleach_tank
@@ -23,6 +22,8 @@ recorder:
       - input_number.off_peak_tariff
       - input_number.partial_peak_tariff
       - input_number.peak_tariff
+      - switch.pool_light
+      - switch.pool_solar_pump
   exclude:
     entities:
       - binary_sensor.watermeter

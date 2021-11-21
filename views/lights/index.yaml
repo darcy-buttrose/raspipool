@@ -1,0 +1,31 @@
+    badges:
+      - sensor.e_fc
+      - sensor.cycle_pool
+      - sensor.simple_date
+      - sensor.simple_time
+    title: Lights
+    panel: false
+    icon: 'mdi:lightbulb-outline'
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: conditional
+            conditions:
+              - entity: switch.pool_light
+                state: "on"
+            card:
+              type: button
+              entity: switch.pool_light
+              icon: mdi:lightbulb-on
+              tap_action:
+                action: toggle
+          - type: conditional
+            conditions:
+              - entity: switch.pool_light
+                state: "off"
+            card:
+              type: button
+              entity: switch.pool_light
+              icon: mdi:lightbulb
+              tap_action:
+                action: toggle

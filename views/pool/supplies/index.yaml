@@ -1,0 +1,33 @@
+            title: Supplies
+            type: horizontal-stack
+            cards:
+              - max: 20
+                min: 0
+                theme: default
+                entity: sensor.remain_cycles
+                severity:
+                  green: 15
+                  red: 5
+                  yellow: 10
+                name: Cycles Left
+                type: gauge
+              - card:
+                  type: gauge
+                  entity: input_number.muriatic_tank
+                  max: 76
+                  min: 0
+                  theme: default
+                  severity:
+                    green: 20
+                    red: 0
+                    yellow: 5
+              - card:
+                  type: gauge
+                  entity: input_number.bleach_tank
+                  max: 76
+                  min: 0
+                  theme: default
+                  severity:
+                    green: 20
+                    red: 0
+                    yellow: 5

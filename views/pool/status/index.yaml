@@ -1,0 +1,6 @@
+            title: Status
+            type: horizontal-stack
+            cards:
+              - !include ph.yaml
+              - !include orp.yaml
+              - !include pool-temp.yaml

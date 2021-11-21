@@ -1,0 +1,11 @@
+                min: 15
+                max: 40
+                theme: Backend-selected
+                entity: sensor.pool_temp
+                needle: true
+                severity:
+                  green: 25
+                  yellow: 15
+                  red: 28
+                name: Pool Temp
+                type: gauge

@@ -30,16 +30,8 @@ input_number:
     icon: mdi:blood-bag
     name: Chlorine Tank
     mode: box
-  bleach_tank_imperial:
-    min: 0
-    max: 20
-    step: 0.1
-    unit_of_measurement: 'gal'
-    icon: mdi:blood-bag
-    name: Chlorine Tank
-    mode: box
   bleach_concentration:
-    min: 1
+    min: 0
     max: 15
     step: .25
     unit_of_measurement: '%'
@@ -51,38 +43,18 @@ input_number:
     unit_of_measurement: 'ml/min'
     icon: mdi:needle
     mode: box
-  bleach_speed_imperial:
-    min: 0.1
-    max: 100
-    step: 0.1
-    unit_of_measurement: 'gal/day (GPD)'
-    icon: mdi:needle
-    mode: box
   notify_bleach_high:
     name: Chlorine Overfeed
     min: 0
     max: 15.2
     step: 0.1
     unit_of_measurement: 'l/48h'
-  notify_bleach_high_imperial:
-    name: Chlorine Overfeed
-    min: 0
-    max: 4
-    step: 0.1
-    unit_of_measurement: 'gal/48h'
   notify_bleach_tank:
     name: Chlorine Tank Low
     min: 0
     max: 8
     step: 0.1
     unit_of_measurement: 'l'
-    icon: mdi:flask-empty-outline
-  notify_bleach_tank_imperial:
-    name: Chlorine Tank Low
-    min: 0
-    max: 2
-    step: 0.1
-    unit_of_measurement: 'gal'
     icon: mdi:flask-empty-outline
   bleach_inject:
     min: 0
@@ -93,97 +65,6 @@ input_number:
     mode: box
 
 automation:
-  # Sync Tank Capacity (l vs gal)
-  - alias: bleach_sync_1
-    trigger:
-      - platform: state
-        entity_id: input_number.bleach_tank
-    condition: []
-    action:
-      - service: input_number.set_value
-        data_template:
-          entity_id: input_number.bleach_tank_imperial
-          value: "{{(states('input_number.bleach_tank')|float / 3.78541)| round(1) }}"
-
-  - alias: bleach_sync_2
-    trigger:
-      - platform: state
-        entity_id: input_number.bleach_tank_imperial
-    condition: []
-    action:
-      - service: input_number.set_value
-        data_template:
-          entity_id: input_number.bleach_tank
-          value: "{{(states('input_number.bleach_tank_imperial')|float * 3.78541)| round(1) }}"
-
-  # Sync Injection Speed capacity (ml/min vs GPD)
-  - alias: bleach_inj_sync_1
-    trigger:
-      - platform: state
-        entity_id: input_number.bleach_speed
-    condition: []
-    action:
-      - service: input_number.set_value
-        data_template:
-          entity_id: input_number.bleach_speed_imperial
-          value: "{{(states('input_number.bleach_speed')|float / 2.6287)| round(1) }}"
-
-  - alias: bleach_inj_sync_2
-    trigger:
-      - platform: state
-        entity_id: input_number.bleach_speed_imperial
-    condition: []
-    action:
-      - service: input_number.set_value
-        data_template:
-          entity_id: input_number.bleach_speed
-          value: "{{(states('input_number.bleach_speed_imperial')|float * 2.6287)| round(1) }}"
-
-  # Sync Overfeed warning (l/48h vs gal/48h)
-  - alias: chlorine_overfeed_sync_1
-    trigger:
-      - platform: state
-        entity_id: input_number.notify_bleach_high
-    condition: []
-    action:
-      - service: input_number.set_value
-        data_template:
-          entity_id: input_number.notify_bleach_high_imperial
-          value: "{{(states('input_number.notify_bleach_high')|float / 3.78541)| round(1) }}"
-
-  - alias: chlorine_overfeed_sync_2
-    trigger:
-      - platform: state
-        entity_id: input_number.notify_bleach_high_imperial
-    condition: []
-    action:
-      - service: input_number.set_value
-        data_template:
-          entity_id: input_number.notify_bleach_high
-          value: "{{(states('input_number.notify_bleach_high_imperial')|float * 3.78541)| round(1) }}"
-
-  # Sync Tank Low warning (l vs gal)
-  - alias: chlorine_tank_low_sync_1
-    trigger:
-      - platform: state
-        entity_id: input_number.notify_bleach_tank
-    condition: []
-    action:
-      - service: input_number.set_value
-        data_template:
-          entity_id: input_number.notify_bleach_tank_imperial
-          value: "{{(states('input_number.notify_bleach_tank')|float / 3.78541)| round(1) }}"
-
-  - alias: chlorine_tank_low_sync_2
-    trigger:
-      - platform: state
-        entity_id: input_number.notify_bleach_tank_imperial
-    condition: []
-    action:
-      - service: input_number.set_value
-        data_template:
-          entity_id: input_number.notify_bleach_tank
-          value: "{{(states('input_number.notify_bleach_tank_imperial')|float * 3.78541)| round(1) }}"
 
   # Bleach Section
   - alias: bleach_every_hour
@@ -209,11 +90,7 @@ automation:
     - data_template:
         title: "Chlorine Tank Low!"
         message: >-
-          {% if is_state("input_boolean.imperial", "on") %}
-            {{states('input_number.bleach_tank_imperial')|float}} gallons left!
-          {% else %}
-            {{states('input_number.bleach_tank')|float}} liters left!
-          {% endif %}
+          {{states('input_number.bleach_tank')|float}} liters left!
       service: notify.notify
 
   - alias: bleach_high
@@ -233,11 +110,7 @@ automation:
     - data_template:
         title: "Bleach Injection Blocked!"
         message: >-
-          {% if is_state("input_boolean.imperial", "on") %}
-            {{states('input_number.notify_blach_high_imperial')|float|round(1)}} gallons in 48h!
-          {% else %}
-            {{states('input_number.notify_bleach_high')|float|round(1)}} liters in 48h!
-          {% endif %}
+          {{states('input_number.notify_bleach_high')|float|round(1)}} liters in 48h!
       service: notify.notify
 
   - alias: bleach_set
@@ -270,11 +143,7 @@ automation:
     - data_template:
         title: "Chlorine Injection Start"
         message: >-
-          {% if is_state("input_boolean.imperial", "on") %}
-            Adding {{(states('input_number.bleach_inject')|float * 0.033814)|round(0)}} oz
-          {% else %}
-            Adding {{states('input_number.bleach_inject')|float|round(0)}} ml
-          {% endif %}
+          Adding {{states('input_number.bleach_inject')|float|round(0)}} ml
       service: notify.notify
     - delay: 00:00:{{ [0 , 60 * states('input_number.bleach_inject')|float/ states('input_number.bleach_speed')|float ]|max|int }}
     - entity_id: switch.orp

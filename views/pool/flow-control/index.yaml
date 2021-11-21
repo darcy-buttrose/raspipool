@@ -1,0 +1,16 @@
+            type: horizontal-stack
+            cards:
+              - max: 10
+                min: 0
+                theme: default
+                entity: sensor.flow_rate
+                severity:
+                  green: 3
+                  red: 0
+                  yellow: 9
+                name: Flow
+                type: gauge
+              - type: button
+                entity: binary_sensor.flow_on_icon
+                tap_action:
+                  action: none

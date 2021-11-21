@@ -1,0 +1,22 @@
+        title: Chemical settings
+        entities:
+          - label: Free Chlorine (FC)
+            type: section
+          - entity: input_number.fc_target
+            name: FC target
+          - entity: sensor.e_fc
+            name: FC actual
+          - entity: input_number.bleach_inject
+            name: Next bleach injection (ml)
+          - entity: input_number.e_fc_adjust
+            name: Adjust ±% FC-ORP
+          - label: pH
+            type: section
+          - entity: input_number.ph_target
+            name: pH target
+          - entity: sensor.ph
+            name: pH actual
+          - entity: input_number.muriatic_inject
+            name: Next Acid Injection (ml)
+        type: entities
+        show_header_toggle: false

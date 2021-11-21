@@ -11,18 +11,18 @@ switch:
 #     20: ph
 #     21: orp
 #    invert_logic: true
-  - platform: sequent_microsystems
-    name: Pump
-    relay: 4
-  - platform: sequent_microsystems
-    name: Turbo
-    relay: 3
-  - platform: sequent_microsystems
-    name: ph
-    relay: 7
-  - platform: sequent_microsystems
-    name: orp
-    relay: 8
+#  - platform: sequent_microsystems
+#    name: Pump
+#    relay: 4
+#  - platform: sequent_microsystems
+#    name: Turbo
+#    relay: 3
+#  - platform: sequent_microsystems
+#    name: ph
+#    relay: 7
+#  - platform: sequent_microsystems
+#    name: orp
+#    relay: 8
 
 input_boolean:
   lock_bleach:

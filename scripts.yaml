@@ -16,4 +16,3 @@ calibrate_temp:
       data_template:
         device: "rtd"
         target: "{{ states('input_number.calibrate_temp') }}"
-

@@ -1,0 +1,34 @@
+    badges: []
+    title: History
+    icon: 'mdi:chart-line'
+    cards:
+          - title: last 3 hours
+            entities:
+              - entity: sensor.pump_state
+              - entity: switch.orp
+                name: Chlorine inj.
+              - entity: switch.ph
+                name: Acid inj.
+              - entity: sensor.ph
+                name: pH
+              - entity: sensor.orp
+                name: ORP
+              - entity: sensor.pool_temp
+                name: Water Temp.
+            type: history-graph
+            hours_to_show: 3
+          - title: last 3 days
+            entities:
+              - entity: sensor.pump_state
+              - entity: switch.orp
+                name: Chlorine inj.
+              - entity: switch.ph
+                name: Acid inj.
+              - entity: sensor.ph
+                name: pH
+              - entity: sensor.orp
+                name: ORP
+              - entity: sensor.pool_temp
+                name: Water Temp.
+            type: history-graph
+            hours_to_show: 72

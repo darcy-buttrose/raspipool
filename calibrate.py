@@ -145,9 +145,9 @@ def main():
         exit()
 
     print("Calibrating {:s} sensor to target value {:.3f}".format(device.moduletype, target))
-    
+
     # print_devices(device_list, device)
-    
+
     calibrate(device, target)
 
 

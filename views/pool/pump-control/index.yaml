@@ -1,0 +1,59 @@
+            type: horizontal-stack
+            cards:
+              - type: button
+                entity: switch.pump
+                icon: mdi:engine
+                tap_action:
+                  action: toggle
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.turbo
+                    state: "on"
+                card:
+                  type: button
+                  entity: switch.turbo
+                  icon: mdi:car-turbocharger
+                  tap_action:
+                    action: toggle
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.lock_muriatic
+                    state_not: "on"
+                card:
+                  type: button
+                  entity: binary_sensor.muriatic
+                  tap_action:
+                    action: call-service
+                    service: switch.toggle
+                    service_data:
+                      entity_id: switch.ph
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.lock_muriatic
+                    state: "on"
+                card:
+                  type: button
+                  entity: binary_sensor.muriatic
+                  tap_action:
+                    action: none
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.lock_bleach
+                    state_not: "on"
+                card:
+                  type: button
+                  entity: binary_sensor.bleach
+                  tap_action:
+                    action: call-service
+                    service: switch.toggle
+                    service_data:
+                      entity_id: switch.orp
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.lock_bleach
+                    state: "on"
+                card:
+                  type: button
+                  entity: binary_sensor.bleach
+                  tap_action:
+                    action: none

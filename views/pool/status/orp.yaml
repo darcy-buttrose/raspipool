@@ -1,0 +1,13 @@
+                type: vertical-stack
+                cards:
+                  - max: 1200
+                    min: 0
+                    theme: Backend-selected
+                    entity: sensor.orp
+                    needle: true
+                    severity:
+                      green: 750
+                      yellow: 650
+                      red: 0
+                    name: ORP
+                    type: gauge

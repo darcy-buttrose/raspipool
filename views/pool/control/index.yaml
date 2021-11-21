@@ -1,0 +1,5 @@
+            title: Pool Control
+            type: horizontal-stack
+            cards:
+              - !include light/index.yaml
+              - !include solar-pump/index.yaml

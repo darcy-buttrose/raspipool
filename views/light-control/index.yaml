@@ -1,0 +1,12 @@
+    badges: []
+    title: Schedule
+    icon: 'mdi:calendar'
+    cards:
+      - title: Schedule
+        type: custom:scheduler-card
+        standard_configuration: True
+        am_pm: True
+        discover_existing: true
+        include:
+          - switch.pool_light
+          - switch.pool_solar_pump

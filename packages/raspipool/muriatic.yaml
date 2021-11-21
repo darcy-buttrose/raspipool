@@ -31,32 +31,17 @@ input_number:
     icon: mdi:blood-bag
     name: Acid Tank
     mode: box
-  muriatic_tank_imperial:
-    min: 0
-    max: 20
-    step: 0.1
-    unit_of_measurement: 'gal'
-    icon: mdi:blood-bag
-    name: Acid Tank
-    mode: box
   muriatic_concentration:
-    min: 5
+    min: 0
     max: 30
     step: .1
     unit_of_measurement: '%'
     icon: mdi:water-percent
   muriatic_speed:
-    min: 0
-    max: 263
-    step: 1
+    min: 10
+    max: 750
+    step: 10
     unit_of_measurement: 'ml/min'
-    icon: mdi:needle
-    mode: box
-  muriatic_speed_imperial:
-    min: 0.1
-    max: 100
-    step: 0.1
-    unit_of_measurement: 'gal/day (GPD)'
     icon: mdi:needle
     mode: box
   notify_muriatic_high:
@@ -65,25 +50,12 @@ input_number:
     max: 15.2
     step: 0.1
     unit_of_measurement: 'l/48h'
-  notify_muriatic_high_imperial:
-    name: Acid Overfeed
-    min: 0
-    max: 4
-    step: 0.1
-    unit_of_measurement: 'gal/48h'
   notify_muriatic_tank:
     name: Acid Tank Low
     min: 0
     max: 8
     step: 0.1
     unit_of_measurement: 'l'
-    icon: mdi:flask-empty-outline
-  notify_muriatic_tank_imperial:
-    name: Acid Tank Low
-    min: 0
-    max: 2
-    step: 0.1
-    unit_of_measurement: 'gal'
     icon: mdi:flask-empty-outline
   muriatic_inject:
     min: 0
@@ -94,99 +66,6 @@ input_number:
     mode: box
 
 automation:
-  # Sync Tank Capacity (l vs gal)
-  - alias: acid_sync_1
-    trigger:
-      - platform: state
-        entity_id: input_number.muriatic_tank
-    condition: []
-    action:
-      - service: input_number.set_value
-        data_template:
-          entity_id: input_number.muriatic_tank_imperial
-          value: "{{(states('input_number.muriatic_tank')|float / 3.78541)| round(1) }}"
-
-  - alias: acid_sync_2
-    trigger:
-      - platform: state
-        entity_id: input_number.muriatic_tank_imperial
-    condition: []
-    action:
-      - service: input_number.set_value
-        data_template:
-          entity_id: input_number.muriatic_tank
-          value: "{{(states('input_number.muriatic_tank_imperial')|float * 3.78541)| round(1) }}"
-
-  # Sync Injection Speed capacity (ml/min vs GPD)
-  - alias: acid_inj_sync_1
-    trigger:
-      - platform: state
-        entity_id: input_number.muriatic_speed
-    condition: []
-    action:
-      - service: input_number.set_value
-        data_template:
-          entity_id: input_number.muriatic_speed_imperial
-          value: "{{(states('input_number.muriatic_speed')|float / 2.6287)| round(1) }}"
-
-  - alias: acid_inj_sync_2
-    trigger:
-      - platform: state
-        entity_id: input_number.muriatic_speed_imperial
-    condition: []
-    action:
-      - service: input_number.set_value
-        data_template:
-          entity_id: input_number.muriatic_speed
-          value: "{{(states('input_number.muriatic_speed_imperial')|float * 2.6287)| round(1) }}"
-
-  # Sync Overfeed warning (l/48h vs gal/48h)
-  - alias: acid_overfeed_sync_1
-    trigger:
-      - platform: state
-        entity_id: input_number.notify_muriatic_high
-    condition: []
-    action:
-      - service: input_number.set_value
-        data_template:
-          entity_id: input_number.notify_muriatic_high_imperial
-          value: "{{(states('input_number.notify_muriatic_high')|float / 3.78541)| round(1) }}"
-
-  - alias: acid_overfeed_sync_2
-    trigger:
-      - platform: state
-        entity_id: input_number.notify_muriatic_high_imperial
-    condition: []
-    action:
-      - service: input_number.set_value
-        data_template:
-          entity_id: input_number.notify_muriatic_high
-          value: "{{(states('input_number.notify_muriatic_high_imperial')|float * 3.78541)| round(1) }}"
-
-  # Sync Tank Low warning (l vs gal)
-  - alias: acid_tank_low_sync_1
-    trigger:
-      - platform: state
-        entity_id: input_number.notify_muriatic_tank
-    condition: []
-    action:
-      - service: input_number.set_value
-        data_template:
-          entity_id: input_number.notify_muriatic_tank_imperial
-          value: "{{(states('input_number.notify_muriatic_tank')|float / 3.78541)| round(1) }}"
-      - service: automation.trigger
-        entity_id: automation.muriatic_tank_low
-
-  - alias: acid_tank_low_sync_2
-    trigger:
-      - platform: state
-        entity_id: input_number.notify_muriatic_tank_imperial
-    condition: []
-    action:
-      - service: input_number.set_value
-        data_template:
-          entity_id: input_number.notify_muriatic_tank
-          value: "{{(states('input_number.notify_muriatic_tank_imperial')|float * 3.78541)| round(1) }}"
 
   # Muriatic Section
   - alias: muriatic_every_hour
@@ -212,11 +91,7 @@ automation:
     - data_template:
         title: "Muriatic Tank Low!"
         message: >-
-          {% if is_state("input_boolean.imperial", "on") %}
-            {{states('input_number.muriatic_tank_imperial')|float}} gallons left!
-          {% else %}
-            {{states('input_number.muriatic_tank')|float}} liters left!
-          {% endif %}
+          {{states('input_number.muriatic_tank')|float}} liters left!
       service: notify.notify
 
   - alias: muriatic_high
@@ -236,11 +111,7 @@ automation:
     - data_template:
         title: "Acid Injection Blocked!"
         message: >-
-          {% if is_state("input_boolean.imperial", "on") %}
-            {{states('input_number.notify_muriatic_high_imperial')|float|round(1)}} gallons in 48h!
-          {% else %}
-            {{states('input_number.notify_muriatic_high')|float|round(1)}} in 48h!
-          {% endif %}
+          {{states('input_number.notify_muriatic_high')|float|round(1)}} in 48h!
       service: notify.notify
 
   - alias: muriatic_set
@@ -274,11 +145,7 @@ automation:
     - data_template:
         title: "Acid Injection Start"
         message: >-
-          {% if is_state("input_boolean.imperial", "on") %}
-            Adding {{(states('input_number.muriatic_inject')|float * 0.033814)|round(0)}} oz
-          {% else %}
-            Adding {{states('input_number.muriatic_inject')|float|round(0)}} ml
-          {% endif %}
+          Adding {{states('input_number.muriatic_inject')|float|round(0)}} ml
       service: notify.notify
     - delay: 00:00:{{ [0 , 60 * states('input_number.muriatic_inject')|float/ states('input_number.muriatic_speed')|float ]|max|int }}
     - entity_id: switch.ph

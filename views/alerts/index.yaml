@@ -1,0 +1,30 @@
+    badges: []
+    path: default_view
+    icon: 'mdi:message-alert'
+    title: Alerts
+    cards:
+      - title: Notifications
+        type: entities
+        entities:
+          - entity: input_number.notify_cycles
+#          - entity: input_number.notify_muriatic_high
+          - row:
+              entity: input_number.notify_muriatic_high
+              theme: default
+              unit: l/48h
+              name: Acid Overfeed (l/48h)
+          - row:
+              entity: input_number.notify_muriatic_tank
+              theme: default
+              unit: l
+              name: Acid Tank Low (l)
+          - row:
+              entity: input_number.notify_bleach_high
+              theme: default
+              unit: l/48h
+              name: Chlorine Overfeed (l/48h)
+          - row:
+              entity: input_number.notify_bleach_tank
+              theme: default
+              unit: l
+              name: Chlorine Tank Low (l)

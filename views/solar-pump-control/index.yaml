@@ -1,0 +1,16 @@
+    badges: []
+    title: Light Control
+    icon: 'mdi:weather-sunny'
+    cards:
+      - title: Solar Pump Schedule
+        type: custom:scheduler-card
+        standard_configuration: False
+        am_pm: True
+        discover_existing: false
+        include:
+          - switch.pool_solar_pump
+        customize:
+          switch.pool_solar_pump:
+            actions:
+              - service: turn_on
+              - service: turn_off

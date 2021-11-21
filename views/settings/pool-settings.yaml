@@ -1,0 +1,20 @@
+        title: Pool Settings
+        theme: default
+        entities:
+          - label: Pool
+            type: section
+          - row:
+              entity: input_number.capacity_metric
+              theme: default
+              name: Pool Capacity (m³)
+          - entity: input_number.quality
+            name: Quality
+          - entity: input_datetime.recirculation
+            name: Turnover rate
+          - label: Filter
+            type: section
+          - entity: input_datetime.cycle_start
+          - entity: sensor.cycle_pool
+          - entity: input_number.cycle
+        type: entities
+        show_header_toggle: false
