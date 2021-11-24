@@ -1,16 +1,40 @@
     badges: []
-    title: Light Control
+    title: Solar Pool Heater
     icon: 'mdi:weather-sunny'
     cards:
-      - title: Solar Pump Schedule
-        type: custom:scheduler-card
-        standard_configuration: False
-        am_pm: True
-        discover_existing: false
-        include:
-          - switch.pool_solar_pump
-        customize:
-          switch.pool_solar_pump:
-            actions:
-              - service: turn_on
-              - service: turn_off
+      - type: vertical-stack
+        cards:
+          - title: Solar Pump Schedule
+            type: custom:scheduler-card
+            standard_configuration: True
+            am_pm: True
+            discover_existing: true
+            include:
+              - input_boolean.solar_pump_on
+          - type: entities
+            entities:
+              - entity: input_boolean.solar_pump_on
+                name: Solar Pump On
+              - entity: sensor.solar_pump_running
+                name: Solar Pump Running
+              - entity: sensor.seconds_since_solar_pump_start
+                name: Seconds Since Solar Pump Start
+              - entity: sensor.distance_from_window_boundary_mod
+                name: Distance From Window Boundary
+      - title: Solar Pump Control
+        entities:
+          - entity: input_boolean.solar_pump_active
+            name: Activate Solar Pump
+          - entity: input_number.temp_range_low
+            theme: default
+            name: Low Temporature
+          - entity: input_number.temp_range_high
+            theme: default
+            name: High Tempurature
+          - entity: input_number.temp_check_delay
+            theme: default
+            name: Delay
+          - entity: input_number.temp_check_window
+            name: Window
+        type: entities
+        show_header_toggle: false

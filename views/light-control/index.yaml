@@ -1,12 +1,11 @@
     badges: []
-    title: Schedule
-    icon: 'mdi:calendar'
+    title: Light Control
+    icon: 'mdi:lightbulb-variant-outline'
     cards:
-      - title: Schedule
+      - title: Pool Light Schedule
         type: custom:scheduler-card
         standard_configuration: True
         am_pm: True
         discover_existing: true
         include:
           - switch.pool_light
-          - switch.pool_solar_pump

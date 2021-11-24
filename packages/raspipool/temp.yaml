@@ -22,6 +22,29 @@ sensor:
           {% else %}
             {{ states('sensor.pool_temp_stat') }}
           {% endif %}
+      solar_pump_on:
+        value_template: >
+          {{ states.input_boolean.solar_pump_on.state }}
+      solar_pump_running:
+        value_template: >
+          {{ states.input_boolean.solar_pump_running.state }}
+      seconds_since_solar_pump_start:
+        value_template: >
+          {{ (now().timestamp() - states.input_boolean.solar_pump_on.last_changed.timestamp()) | int }}
+      distance_from_window_boundary_div:
+        value_template: >-
+          {{ (( states('sensor.seconds_since_solar_pump_start') | float ) / ( states('input_number.temp_check_window') | float )) | int }}
+      distance_from_window_boundary_mod:
+        value_template: >-
+          {{ (( states('sensor.seconds_since_solar_pump_start') | float ) % ( states('input_number.temp_check_window') | float )) | int }}
+
+
+# When does pump start
+# if time since switch.pool_solar_pump state change to on is temp_check_window
+
+# When does pump stop
+# if time since last switch.pool_solar_pump state change to on is greater than temp_check_delay
+# and binary_sensor.pool_temp_threshold is off
 
 
 input_number:
@@ -33,33 +56,65 @@ input_number:
     icon: mdi:coolant-temperature
     mode: box
     initial: 70
+  temp_range_low:
+    min: 20
+    max: 35
+    step: .5
+    unit_of_measurement: 'C'
+    icon: mdi:coolant-temperature
+    initial: 25
+  temp_range_high:
+    min: 20
+    max: 35
+    step: .5
+    unit_of_measurement: 'C'
+    icon: mdi:coolant-temperature
+    initial: 28
+  temp_check_delay:
+    min: 30
+    max: 300
+    step: 1
+    unit_of_measurement: 'seconds'
+    icon: mdi:clock-start
+    initial: 300
+  temp_check_window:
+    min: 30
+    max: 120
+    step: 30
+    unit_of_measurement: 'minutes'
+    icon: mdi:repeat
+    initial: 60
 
-automation:
-#TODO - fix this!!!!
-  - alias: temp_low
-    trigger:
-    - platform: numeric_state
-      entity_id: sensor.pool_temp_stat
-      below: 7
-      for:
-        hours: 24
-    action:
-    - data_template:
-        message: '{{trigger.to_state.attributes.friendly_name}} has been less than {{trigger.below}} °C
-          for more than {{trigger.for}}'
-        title: 'Temperature Low - {{trigger.to_state.state}} °C!'
-      service: notify.notify
+input_boolean:
+  solar_pump_active:
+    initial: true
+  solar_pump_on:
+    initial: false
+  solar_pump_running:
+    initial: false
 
-  - alias: temp_high
-    trigger:
-    - platform: numeric_state
-      entity_id: sensor.pool_temp_stat
-      above: 29
-      for:
-        hours: 24
-    action:
-    - data_template:
-        message: '{{trigger.to_state.attributes.friendly_name}} has been more than {{trigger.above}} °C
-          for more than {{trigger.for}}'
-        title: 'Temperature High - {{trigger.to_state.state}} °C!'
-      service: notify.notify
+binary_sensor:
+
+  - platform: threshold
+    entity_id: sensor.pool_temp_stat
+    lower: 25
+    upper: 28
+    name: pool_temp_threshold
+
+#automation:
+#  - alias: Solar Pump On
+#    trigger:
+#      - platform: state
+#        entity_id: sensor.solar_pump_on
+#        to: true
+#        action:
+#          - entity_id: switch.pool_solar
+#            service: switch.turn_on
+#  - alias: Solar Pump Off
+#    trigger:
+#      - platform: state
+#        entity_id: sensor.solar_pump_on
+#        to: false
+#        action:
+#          - entity_id: switch.pool_solar
+#            service: switch.turn_off

@@ -2,9 +2,10 @@ title: Raspipool (2021-11-14-7)
 views:
   - !include views/pool/index.yaml
   - !include views/light-control/index.yaml
+  - !include views/solar-pump-control/index.yaml
+  - !include views/pump-control/index.yaml
   - !include views/chemical/index.yaml
   - !include views/settings/index.yaml
   - !include views/alerts/index.yaml
   - !include views/advanced/index.yaml
-  - !include views/pump-control/index.yaml
   - !include views/history/index.yaml
