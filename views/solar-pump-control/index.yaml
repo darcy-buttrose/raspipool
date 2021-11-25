@@ -17,10 +17,14 @@
                 name: Solar Pump On
               - entity: sensor.solar_pump_running
                 name: Solar Pump Running
-              - entity: sensor.seconds_since_solar_pump_start
-                name: Seconds Since Solar Pump Start
-              - entity: sensor.distance_from_window_boundary_mod
+              - entity: sensor.seconds_since_solar_pump_change
+                name: Seconds Since Solar Pump Change
+              - entity: sensor.distance_from_window_boundary
                 name: Distance From Window Boundary
+              - entity: sensor.temp_check_delay_ratio
+                name: Temp Check Delay Ratio
+              - entity: binary_sensor.on_window
+                name: On Window
       - title: Solar Pump Control
         entities:
           - entity: input_boolean.solar_pump_active

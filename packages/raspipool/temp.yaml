@@ -28,16 +28,15 @@ sensor:
       solar_pump_running:
         value_template: >
           {{ states.input_boolean.solar_pump_running.state }}
-      seconds_since_solar_pump_start:
+      seconds_since_solar_pump_change:
         value_template: >
           {{ (now().timestamp() - states.input_boolean.solar_pump_on.last_changed.timestamp()) | int }}
-      distance_from_window_boundary_div:
+      distance_from_window_boundary:
         value_template: >-
-          {{ (( states('sensor.seconds_since_solar_pump_start') | float ) / ( states('input_number.temp_check_window') | float )) | int }}
-      distance_from_window_boundary_mod:
+          {{ (( states('sensor.seconds_since_solar_pump_change') | float ) % ( states('input_number.temp_check_window') | float * 60 )) | int }}
+      temp_check_delay_ratio:
         value_template: >-
-          {{ (( states('sensor.seconds_since_solar_pump_start') | float ) % ( states('input_number.temp_check_window') | float )) | int }}
-
+          {{ (( states('input_number.temp_check_delay') | float ) % ( states('input_number.temp_check_window') | float * 60 )) | int }}
 
 # When does pump start
 # if time since switch.pool_solar_pump state change to on is temp_check_window
@@ -101,20 +100,45 @@ binary_sensor:
     upper: 28
     name: pool_temp_threshold
 
-#automation:
-#  - alias: Solar Pump On
-#    trigger:
-#      - platform: state
-#        entity_id: sensor.solar_pump_on
-#        to: true
-#        action:
-#          - entity_id: switch.pool_solar
-#            service: switch.turn_on
-#  - alias: Solar Pump Off
-#    trigger:
-#      - platform: state
-#        entity_id: sensor.solar_pump_on
-#        to: false
-#        action:
-#          - entity_id: switch.pool_solar
-#            service: switch.turn_off
+  - platform: template
+    sensors:
+      pool_temp_check:
+        value_template: "{{ (states('sensor.temp_check_delay_ratio') | int) == (states('distance_from_window_boundary') | int) }}"
+      on_window:
+        value_template: "{{ states('sensor.distance_from_window_boundary') | int == 0 }}"
+
+automation:
+  - alias: Solar Pump On
+    trigger:
+      - platform: template
+        value_template: "{{ is_state('binary_sensor.on_window', 'on') and is_state('input_boolean.solar_pump_on', 'on') and is_state('sensor.solar_pump_running', 'off') }}"
+    condition: []
+    action:
+      - entity_id: input_boolean.solar_pump_running
+        service: input_boolean.turn_on
+  - alias: Solar Pump Off
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.pool_temp_check
+        state: 'on'
+    condition:
+      - condition: and
+        conditions:
+          - condition: state
+            entity_id: input_boolean.solar_pump_running
+            state: 'on'
+          - condition: state
+            entity_id: sensor.pool_temp_threshold
+            state: 'off'
+    action:
+      - entity_id: input_boolean.solar_pump_running
+        service: input_boolean.turn_off
+  - alias: Solar Pump Off Imediate
+    trigger:
+      - platform: template
+        value_template: "{{ is_state('input_boolean.solar_pump_on', 'off') }}"
+    condition: []
+    action:
+      - entity_id: input_boolean.solar_pump_running
+        service: input_boolean.turn_off
+
