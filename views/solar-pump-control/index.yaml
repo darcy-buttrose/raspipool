@@ -15,7 +15,7 @@
             entities:
               - entity: input_boolean.solar_pump_on
                 name: Solar Pump On
-              - entity: sensor.solar_pump_running
+              - entity: input_boolean.solar_pump_running
                 name: Solar Pump Running
               - entity: sensor.seconds_since_solar_pump_change
                 name: Seconds Since Solar Pump Change

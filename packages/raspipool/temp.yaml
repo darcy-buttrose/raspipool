@@ -22,9 +22,6 @@ sensor:
           {% else %}
             {{ states('sensor.pool_temp_stat') }}
           {% endif %}
-      solar_pump_on:
-        value_template: >
-          {{ states.input_boolean.solar_pump_on.state }}
       solar_pump_running:
         value_template: >
           {{ states.input_boolean.solar_pump_running.state }}
