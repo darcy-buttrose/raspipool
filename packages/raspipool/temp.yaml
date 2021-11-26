@@ -100,9 +100,11 @@ binary_sensor:
   - platform: template
     sensors:
       pool_temp_check:
-        value_template: "{{ (states('sensor.temp_check_delay_ratio') | int) == (states('distance_from_window_boundary') | int) }}"
+        value_template: >
+          {{ (states('sensor.temp_check_delay') | float) < (states('sensor.distance_from_window_boundary') | float) }}
       on_window:
-        value_template: "{{ states('sensor.distance_from_window_boundary') | int == 0 }}"
+        value_template: >
+          {{ states('sensor.distance_from_window_boundary') | int == 0 }}
 
 automation:
   - alias: Solar Pump On
