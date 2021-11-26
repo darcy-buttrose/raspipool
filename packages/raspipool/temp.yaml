@@ -22,9 +22,6 @@ sensor:
           {% else %}
             {{ states('sensor.pool_temp_stat') }}
           {% endif %}
-      solar_pump_running:
-        value_template: >
-          {{ states.input_boolean.solar_pump_running.state }}
       seconds_since_solar_pump_change:
         value_template: >
           {{ (now().timestamp() - states.input_boolean.solar_pump_on.last_changed.timestamp()) | int }}
