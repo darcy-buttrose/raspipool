@@ -21,10 +21,12 @@
                 name: Seconds Since Solar Pump Change
               - entity: sensor.distance_from_window_boundary
                 name: Distance From Window Boundary
-              - entity: sensor.temp_check_delay_ratio
-                name: Temp Check Delay Ratio
               - entity: binary_sensor.on_window
                 name: On Window
+              - entity: sensor.temp_check_delay
+                name: Temp Check Delay
+              - entity: sensor.temp_check_window
+                name: Temp Check Window
       - title: Solar Pump Control
         entities:
           - entity: input_boolean.solar_pump_active
