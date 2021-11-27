@@ -17,6 +17,8 @@
                 name: Solar Pump On
               - entity: input_boolean.solar_pump_running
                 name: Solar Pump Running
+              - entity: switch.pool_solar_pump
+                name: Real Solar Pump
               - entity: sensor.seconds_since_solar_pump_change
                 name: Seconds Since Solar Pump Change
               - entity: sensor.distance_from_window_boundary
@@ -31,6 +33,12 @@
                 name: Check Pool Temp
               - entity: binary_sensor.pool_temp_threshold
                 name: Pool Temp Threshold
+              - entity: binary_sensor.turn_solar_pump_off
+                name: Turn Pump Off
+              - entity: binary_sensor.solar_pump_running
+                name: Solar Pump Running
+              - entity: binary_sensor.dummy_pump
+                name: Dummy Pump
       - title: Solar Pump Control
         entities:
           - entity: input_boolean.solar_pump_active

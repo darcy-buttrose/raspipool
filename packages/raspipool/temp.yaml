@@ -88,6 +88,8 @@ input_boolean:
     initial: false
   solar_pump_running:
     initial: false
+  dummy_pump:
+    initial: false
 
 binary_sensor:
 
@@ -105,6 +107,15 @@ binary_sensor:
       on_window:
         value_template: >
           {{ states('sensor.distance_from_window_boundary') | int == 0 }}
+      turn_solar_pump_off:
+        value_template: >-
+          {{ is_state('binary_sensor.pool_temp_check','on') and is_state('binary_sensor.pool_temp_threshold','off') }}
+      solar_pump_running:
+        value_template: >-
+          {{ states('input_boolean.solar_pump_running') }}
+      dummy_pump:
+        value_template: >-
+          {{ states('input_boolean.dummy_pump') }}
 
 automation:
   - alias: Solar Pump On
@@ -117,18 +128,8 @@ automation:
         service: input_boolean.turn_on
   - alias: Solar Pump Off
     trigger:
-      - platform: state
-        entity_id: binary_sensor.pool_temp_check
-        state: 'on'
-    condition:
-      - condition: and
-        conditions:
-          - condition: state
-            entity_id: input_boolean.solar_pump_running
-            state: 'on'
-          - condition: state
-            entity_id: sensor.pool_temp_threshold
-            state: 'off'
+      - platform: template
+        value_template: "{{ is_state('binary_sensor.pool_temp_check','on') and is_state('binary_sensor.pool_temp_threshold','off') }}"
     action:
       - entity_id: input_boolean.solar_pump_running
         service: input_boolean.turn_off
@@ -140,4 +141,28 @@ automation:
     action:
       - entity_id: input_boolean.solar_pump_running
         service: input_boolean.turn_off
+
+  - alias: Real Solar Pump On
+    trigger:
+      - platform: template
+        value_template: "{{ is_state('binary_sensor.solar_pump_running','on') }}"
+    condition: []
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.dummy_pump
+      - service: switch.turn_on
+        entity_id: switch.pool_solar_pump
+
+
+  - alias: Real Solar Pump Off
+    trigger:
+      - platform: template
+        value_template: "{{ is_state('binary_sensor.solar_pump_running','off') }}"
+    condition: []
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.dummy_pump
+      - service: switch.turn_off
+        entity_id: switch.pool_solar_pump
+
 
