@@ -74,9 +74,9 @@ input_number:
     icon: mdi:clock-start
     initial: 300
   temp_check_window:
-    min: 5
+    min: 1
     max: 120
-    step: 5
+    step: 1
     unit_of_measurement: 'minutes'
     icon: mdi:repeat
     initial: 60
@@ -93,14 +93,11 @@ input_boolean:
 
 binary_sensor:
 
-  - platform: threshold
-    entity_id: sensor.pool_temp_stat
-    lower: 25
-    upper: 28
-    name: pool_temp_threshold
-
   - platform: template
     sensors:
+      pool_temp_threshold:
+        value_template: >
+          {{ ((((states('input_number.temp_range_low') | float) < (states('sensor.pool_temp') | float)) and ((states('input_number.temp_range_hight') | float) > (states('sensor.pool_temp') | float))))}}
       pool_temp_check:
         value_template: >
           {{ (states('sensor.temp_check_delay') | float) < (states('sensor.distance_from_window_boundary') | float) }}
@@ -150,8 +147,8 @@ automation:
     action:
       - service: input_boolean.turn_on
         entity_id: input_boolean.dummy_pump
-      - service: switch.turn_on
-        entity_id: switch.pool_solar_pump
+#      - service: switch.turn_on
+#        entity_id: switch.pool_solar_pump
 
 
   - alias: Real Solar Pump Off
@@ -162,7 +159,7 @@ automation:
     action:
       - service: input_boolean.turn_off
         entity_id: input_boolean.dummy_pump
-      - service: switch.turn_off
-        entity_id: switch.pool_solar_pump
+#      - service: switch.turn_off
+#        entity_id: switch.pool_solar_pump
 
 
