@@ -17,10 +17,6 @@
                 name: Solar Pump On
               - entity: input_boolean.solar_pump_running
                 name: Solar Pump Running
-              - entity: binary_sensor.solar_pump_running
-                name: Solar Pump Running
-              - entity: binary_sensor.dummy_pump
-                name: Dummy Pump
               - entity: sensor.minutes_since_solar_pump_change
                 name: Minutes Since Solar Pump Change
               - entity: sensor.distance_from_window_boundary
