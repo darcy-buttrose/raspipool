@@ -1,16 +1,19 @@
 sensor:
 # Atlas Resistance Temperature Detector (RTD)
   - platform: atlas_scientific
-# For serial ports use:
-#   port: /dev/ttyUSB0
-# For I2C enter the hex device id
-    port: 0x66
+    port: 0x6E # 110
+    name: pool
     scan_interval: 30
-    scale: 'F'
+
+# Atlas Resistance Temperature Detector (RTD)
+  - platform: atlas_scientific
+    port: 0x66 # 102
+    name: roof
+    scan_interval: 30
 
   - platform: statistics
     name: pool_temp_stat
-    entity_id: sensor.ezo_temperature
+    entity_id: sensor.pool_temperature
 
   - platform: template
     sensors:

@@ -1,4 +1,7 @@
 sensor:
+  - platform: atlas_scientific
+    port: 0x67 # 103
+
   - platform: template
     sensors:
       muriatic_tank:

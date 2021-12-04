@@ -238,7 +238,7 @@ automation:
     - service: homeassistant.update_entity
       entity_id: sensor.ezo_ph
     - service: homeassistant.update_entity
-      entity_id: sensor.ezo_temperature
+      entity_id: sensor.pool_temperature
     - service: homeassistant.update_entity
       entity_id: sensor.ezo_orp
 

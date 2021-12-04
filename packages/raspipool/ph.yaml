@@ -3,7 +3,7 @@ sensor:
 # For serial ports use:
 #   port: /dev/ttyUSB0
 # For I2C enter the hex device id
-    port: 0x63
+    port: 0x63 # 99
     scan_interval: 30
     # scan_interval: 31536000
     # never scan, scanning happens every 2 mins
