@@ -18,10 +18,10 @@ sensor:
       ph:
         unit_of_measurement: 'pH'
         value_template: >
-          {% if is_state('sensor.ph_stat', 'unknown') %}
+          {% if is_state('sensor.ezo_ph', 'unknown') %}
             0
           {% else %}
-            {{ states('sensor.ph_stat') }}
+            {{ states('sensor.ezo_ph') }}
           {% endif %}
 
 input_number:

@@ -29,8 +29,10 @@
                 name: On Window
               - entity: binary_sensor.pool_temp_check
                 name: Check Pool Temp
-              - entity: binary_sensor.pool_temp_threshold
-                name: Pool Temp Threshold
+              - entity: binary_sensor.pool_temp_to_high
+                name: Pool Temp To High
+              - entity: binary_sensor.pool_temp_higher_than_roof_temp
+                name: Pool Temp Higher Than Roof Temp
               - entity: binary_sensor.turn_solar_pump_off
                 name: Turn Pump Off
       - title: Solar Pump Control

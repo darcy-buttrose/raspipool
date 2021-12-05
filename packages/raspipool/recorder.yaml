@@ -7,10 +7,12 @@ recorder:
       - sensor.orp
       - sensor.ph
       - sensor.pool_temp
+      - sensor.roof_temp
       - sensor.ezo_ph
       - sensor.ezo_orp
       - sensor.ezo_pump
       - sensor.ezo_conductivity
+      - sensor.tds
       - sensor.pool_tempurature
       - sensor.roof_tempurature
       - sensor.remain_cycles

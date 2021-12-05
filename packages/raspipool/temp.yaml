@@ -15,15 +15,27 @@ sensor:
     name: pool_temp_stat
     entity_id: sensor.pool_temperature
 
+  - platform: statistics
+    name: roof_temp_stat
+    entity_id: sensor.roof_temperature
+
   - platform: template
     sensors:
       pool_temp:
         unit_of_measurement: 'C'
         value_template: >
-          {% if is_state('sensor.pool_temp_stat', 'unknown') %}
+          {% if is_state('sensor.pool_temperature', 'unknown') %}
             0
           {% else %}
-            {{ states('sensor.pool_temp_stat') }}
+            {{ states('sensor.pool_temperature') }}
+          {% endif %}
+      roof_temp:
+        unit_of_measurement: 'C'
+        value_template: >
+          {% if is_state('sensor.roof_temperature', 'unknown') %}
+            0
+          {% else %}
+            {{ states('sensor.roof_temperature') }}
           {% endif %}
       temp_check_window:
         value_template: >
@@ -102,7 +114,16 @@ binary_sensor:
     sensors:
       pool_temp_threshold:
         value_template: >
-          {{ ((((states('input_number.temp_range_low') | float) < (states('sensor.pool_temp') | float)) and ((states('input_number.temp_range_high') | float) > (states('sensor.pool_temp') | float))))}}
+          {{ ((((states('input_number.temp_range_low') | float) < (states('sensor.pool_temp') | float)) and ((states('input_number.temp_range_high') | float) > (states('sensor.pool_temp') | float) )))}}
+      pool_temp_to_high:
+        value_template: >
+          {{ (states('input_number.temp_range_high') | float) < (states('sensor.pool_temp') | float) }}
+      pool_temp_to_low:
+        value_template: >
+          {{ (states('input_number.temp_range_low') | float) > (states('sensor.pool_temp') | float) }}
+      pool_temp_higher_than_roof_temp:
+        value_template: >
+          {{ (states('sensor.roof_temp') | float) < (states('sensor.pool_temp') | float) }}
       pool_temp_check:
         value_template: >
           {{ (states('sensor.temp_check_delay') | float) < (states('sensor.distance_from_window_boundary') | float) }}
@@ -111,7 +132,7 @@ binary_sensor:
           {{ states('sensor.distance_from_window_boundary') | int == 0 }}
       turn_solar_pump_off:
         value_template: >-
-          {{ is_state('binary_sensor.pool_temp_check','on') and is_state('binary_sensor.pool_temp_threshold','off') }}
+          {{ is_state('binary_sensor.pool_temp_check','on') and (is_state('binary_sensor.pool_temp_to_high','on') or is_state('sensor.pool_temp_higher_than_roof_temp', 'on') ) }}
       solar_pump_running:
         value_template: >-
           {{ states('input_boolean.solar_pump_running') }}

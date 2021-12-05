@@ -1,13 +1,13 @@
                 type: vertical-stack
                 cards:
-                  - max: 10
+                  - max: 8000
                     min: 0
                     theme: Backend-selected
-                    entity: sensor.ph
+                    entity: sensor.tds
                     needle: true
                     severity:
-                      yellow: 5
-                      green: 7
+                      green: 3000
+                      yellow: 900
                       red: 0
-                    name: pH
+                    name: TDS
                     type: gauge

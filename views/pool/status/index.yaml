@@ -1,6 +1,12 @@
             title: Status
-            type: horizontal-stack
+            type: vertical-stack
             cards:
-              - !include ph.yaml
-              - !include orp.yaml
-              - !include pool-temp.yaml
+              - type: horizontal-stack
+                cards:
+                  - !include ph.yaml
+                  - !include orp.yaml
+                  - !include tds.yaml
+              - type: horizontal-stack
+                cards:
+                  - !include pool-temp.yaml
+                  - !include roof-temp.yaml

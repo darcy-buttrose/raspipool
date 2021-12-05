@@ -19,10 +19,10 @@ sensor:
       orp:
         unit_of_measurement: 'mV'
         value_template: >
-          {% if is_state('sensor.orp_stat', 'unknown') %}
+          {% if is_state('sensor.ezo_orp', 'unknown') %}
             0
           {% else %}
-            {{ states('sensor.orp_stat') }}
+            {{ states('sensor.ezo_orp') }}
           {% endif %}
 
 input_number:

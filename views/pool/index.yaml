@@ -8,7 +8,7 @@
       - type: vertical-stack
         cards:
           - !include status/index.yaml
-          - !include update-status/index.yaml
+#          - !include update-status/index.yaml
           - !include control/index.yaml
 #          - !include supplies/index.yaml
           - !include pump-control/index.yaml

@@ -4,3 +4,17 @@ sensor:
     port: 0x64 # 100
     scan_interval: 30
 
+  - platform: statistics
+    name: tds_stat
+    entity_id: sensor.ezo_conductivity
+
+  - platform: template
+    sensors:
+      tds:
+        unit_of_measurement: 'ppm'
+        value_template: >
+          {% if is_state('sensor.ezo_conductivity', 'unknown') %}
+            0
+          {% else %}
+            {{ states('sensor.ezo_conductivity') }}
+          {% endif %}
