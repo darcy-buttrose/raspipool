@@ -1,6 +1,3 @@
-    badges:
-      - sensor.simple_date
-      - sensor.simple_time
     title: Pool
     panel: false
     icon: 'mdi:pool'

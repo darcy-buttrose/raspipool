@@ -3,7 +3,7 @@
                   - min: 15
                     max: 40
                     theme: Backend-selected
-                    entity: sensor.pool_temp
+                    entity: sensor.pool_temp_stat
                     needle: true
                     severity:
                       green: 25
@@ -11,4 +11,15 @@
                       red: 28
                     name: Pool Temp
                     type: gauge
+                  - show_name: false
+                    entities:
+                      - entity: sensor.pool_temperature
+                        show_last_changed: true
+                        tap_action:
+                          action: call-service
+                          service: homeassistant.update_entity
+                          service_data:
+                            entity_id: sensor.pool_temperature
+                    type: glance
+                    show_state: true
 

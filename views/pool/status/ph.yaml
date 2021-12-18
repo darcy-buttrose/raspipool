@@ -3,7 +3,7 @@
                   - max: 10
                     min: 0
                     theme: Backend-selected
-                    entity: sensor.ph
+                    entity: sensor.ph_stat
                     needle: true
                     severity:
                       yellow: 5
@@ -11,3 +11,14 @@
                       red: 0
                     name: pH
                     type: gauge
+                  - show_name: false
+                    entities:
+                      - entity: sensor.ezo_ph
+                        show_last_changed: true
+                        tap_action:
+                          action: call-service
+                          service: homeassistant.update_entity
+                          service_data:
+                            entity_id: sensor.ezo_ph
+                    type: glance
+                    show_state: true

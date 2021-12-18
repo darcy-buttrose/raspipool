@@ -468,6 +468,13 @@ def ec_info():
     get_output_parameters(device)
 
 @service
+def orp_info():
+    device_list = get_devices()
+    device = get_device(device_list, 'orp')
+    get_probe_type(device)
+    get_output_parameters(device)
+
+@service
 def set_ec_parameters(param, on):
     device_list = get_devices()
     device = get_device(device_list, 'ec')

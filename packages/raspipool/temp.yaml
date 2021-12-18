@@ -89,7 +89,7 @@ input_number:
     step: 1
     unit_of_measurement: 'minutes'
     icon: mdi:clock-start
-    initial: 5
+    initial: 2
   temp_check_window:
     min: 1
     max: 120

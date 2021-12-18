@@ -5,14 +5,19 @@ recorder:
     entities:
       - sensor.pump_state
       - sensor.orp
+      - sensor.orp_stat
       - sensor.ph
+      - sensor.ph_stat
       - sensor.pool_temp
+      - sensor.pool_temo_stat
       - sensor.roof_temp
+      - sensor.roof_temp_stat
       - sensor.ezo_ph
       - sensor.ezo_orp
       - sensor.ezo_pump
       - sensor.ezo_conductivity
       - sensor.tds
+      - sensor.tds_stat
       - sensor.pool_tempurature
       - sensor.roof_tempurature
       - sensor.remain_cycles
