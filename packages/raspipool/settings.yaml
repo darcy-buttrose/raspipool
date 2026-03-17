@@ -87,15 +87,15 @@ automation:
         value: 4
     - service: input_number.set_value
       data_template:
-        entity_id: input_number.bleach_tank
+        entity_id: input_number.chlorine_tank
         value: 20
     - service: input_number.set_value
       data_template:
-        entity_id: input_number.bleach_concentration
+        entity_id: input_number.chlorine_concentration
         value: 5
     - service: input_number.set_value
       data_template:
-        entity_id: input_number.bleach_speed
+        entity_id: input_number.chlorine_speed
         value: 25
     - service: input_number.set_value
       data_template:
@@ -111,15 +111,15 @@ automation:
         value: 7.2
     - service: input_number.set_value
       data_template:
-        entity_id: input_number.muriatic_tank
+        entity_id: input_number.acid_tank
         value: 10
     - service: input_number.set_value
       data_template:
-        entity_id: input_number.muriatic_concentration
+        entity_id: input_number.acid_concentration
         value: 20
     - service: input_number.set_value
       data_template:
-        entity_id: input_number.muriatic_speed
+        entity_id: input_number.acid_speed
         value: 25
     - service: input_datetime.set_datetime
       data_template:

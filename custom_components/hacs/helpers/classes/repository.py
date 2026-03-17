@@ -361,7 +361,7 @@ class HacsRepository(RepositoryHelpers):
 
     async def get_repository_manifest_content(self):
         """Get the content of the hacs.json file."""
-        if not "hacs.json" in [x.filename for x in self.tree]:
+        if "hacs.json" not in [x.filename for x in self.tree]:
             if self.hacs.system.action:
                 raise HacsException("::error:: No hacs.json file in the root of the repository.")
             return

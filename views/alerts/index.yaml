@@ -7,24 +7,24 @@
         type: entities
         entities:
           - entity: input_number.notify_cycles
-#          - entity: input_number.notify_muriatic_high
+#          - entity: input_number.notify_acid_high
           - row:
-              entity: input_number.notify_muriatic_high
+              entity: input_number.notify_acid_high
               theme: default
               unit: l/48h
               name: Acid Overfeed (l/48h)
           - row:
-              entity: input_number.notify_muriatic_tank
+              entity: input_number.notify_acid_tank
               theme: default
               unit: l
               name: Acid Tank Low (l)
           - row:
-              entity: input_number.notify_bleach_high
+              entity: input_number.notify_chlorine_high
               theme: default
               unit: l/48h
               name: Chlorine Overfeed (l/48h)
           - row:
-              entity: input_number.notify_bleach_tank
+              entity: input_number.notify_chlorine_tank
               theme: default
               unit: l
               name: Chlorine Tank Low (l)

@@ -4,7 +4,7 @@ sensor:
 #   port: /dev/ttyUSB0
 # For I2C enter the hex device id
     port: 0x63 # 99
-    scan_interval: 30
+    scan_interval: 2
     # scan_interval: 31536000
     # never scan, scanning happens every 2 mins
     # *while the pump is on*
@@ -12,6 +12,8 @@ sensor:
   - platform: statistics
     name: ph_stat
     entity_id: sensor.ezo_ph
+    state_characteristic: mean
+    sampling_size: 6
 
   - platform: template
     sensors:
@@ -106,4 +108,4 @@ automation:
     condition: []
     action:
       - service: automation.trigger
-        entity_id: automation.muriatic_set
+        entity_id: automation.acid_set

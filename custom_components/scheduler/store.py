@@ -4,7 +4,7 @@ from collections import OrderedDict
 from typing import MutableMapping, cast
 
 import attr
-from homeassistant.core import (callback, HomeAssistant)
+from homeassistant.core import callback, HomeAssistant
 from homeassistant.loader import bind_hass
 from homeassistant.const import (
     ATTR_NAME,
@@ -17,7 +17,7 @@ _LOGGER = logging.getLogger(__name__)
 
 DATA_REGISTRY = f"{const.DOMAIN}_storage"
 STORAGE_KEY = f"{const.DOMAIN}.storage"
-STORAGE_VERSION = 2
+STORAGE_VERSION = 3
 SAVE_DELAY = 10
 
 
@@ -48,6 +48,7 @@ class TimeslotEntry:
     stop = attr.ib(type=str, default=None)
     conditions = attr.ib(type=[ConditionEntry], default=[])
     condition_type = attr.ib(type=str, default=None)
+    track_conditions = attr.ib(type=bool, default=False)
     actions = attr.ib(type=[ActionEntry], default=[])
 
 
@@ -96,17 +97,50 @@ def parse_schedule_data(data: dict):
 class MigratableStore(Store):
     async def _async_migrate_func(self, old_version, data: dict):
 
+        def remove_unequal_number_conditions(timeslots):
+            """ensure all timeslots have the same number of conditions"""
+            if len(timeslots) > 1 and not all(
+                len(el["conditions"]) == len(timeslots[0]["conditions"])
+                for el in timeslots
+            ):
+                return [
+                    {
+                        **slot,
+                        "conditions": timeslots[0]["conditions"]
+                    }
+                    for slot in timeslots
+                ]
+            return timeslots
+
         if old_version < 2:
-            data["schedules"] = [
-                {
-                    **entry,
-                    const.ATTR_START_DATE: entry[const.ATTR_START_DATE]
-                    if const.ATTR_START_DATE in entry else None,
-                    const.ATTR_END_DATE: entry[const.ATTR_END_DATE]
-                    if const.ATTR_END_DATE in entry else None,
-                }
-                for entry in data["schedules"]
-            ] if "schedules" in data else []
+            data["schedules"] = (
+                [
+                    {
+                        **entry,
+                        const.ATTR_START_DATE: entry[const.ATTR_START_DATE]
+                        if const.ATTR_START_DATE in entry
+                        else None,
+                        const.ATTR_END_DATE: entry[const.ATTR_END_DATE]
+                        if const.ATTR_END_DATE in entry
+                        else None,
+                    }
+                    for entry in data["schedules"]
+                ]
+                if "schedules" in data
+                else []
+            )
+        if old_version < 3:
+            data["schedules"] = (
+                [
+                    {
+                        **entry,
+                        const.ATTR_TIMESLOTS: remove_unequal_number_conditions(entry[const.ATTR_TIMESLOTS])
+                    }
+                    for entry in data["schedules"]
+                ]
+                if "schedules" in data
+                else []
+            )
         return data
 
 
@@ -118,6 +152,7 @@ class ScheduleStorage:
         self.hass = hass
         self.schedules: MutableMapping[str, ScheduleEntry] = {}
         self.tags: MutableMapping[str, TagEntry] = {}
+        self.time_shutdown = None
         self._store = MigratableStore(hass, STORAGE_VERSION, STORAGE_KEY)
 
     async def async_load(self) -> None:
@@ -148,6 +183,9 @@ class ScheduleStorage:
                         name=entry[ATTR_NAME],
                         schedules=entry[const.ATTR_SCHEDULES],
                     )
+
+            if "time_shutdown" in data:
+                self.time_shutdown = data["time_shutdown"]
 
         self.schedules = schedules
         self.tags = tags
@@ -186,6 +224,7 @@ class ScheduleStorage:
                     const.ATTR_STOP: slot.stop,
                     CONF_CONDITIONS: [],
                     const.ATTR_CONDITION_TYPE: slot.condition_type,
+                    const.ATTR_TRACK_CONDITIONS: slot.track_conditions,
                     const.ATTR_ACTIONS: [],
                 }
                 if slot.conditions:
@@ -197,9 +236,10 @@ class ScheduleStorage:
                 item[const.ATTR_TIMESLOTS].append(timeslot)
             store_data["schedules"].append(item)
 
-        store_data["tags"] = [
-            attr.asdict(entry) for entry in self.tags.values()
-        ]
+        store_data["tags"] = [attr.asdict(entry) for entry in self.tags.values()]
+
+        if self.time_shutdown:
+            store_data["time_shutdown"] = self.time_shutdown
 
         return store_data
 
@@ -228,12 +268,10 @@ class ScheduleStorage:
     def async_create_schedule(self, data: dict) -> ScheduleEntry:
         """Create a new ScheduleEntry."""
         if const.ATTR_SCHEDULE_ID in data:
-            # migrate existing schedule to store
             schedule_id = data[const.ATTR_SCHEDULE_ID]
             del data[const.ATTR_SCHEDULE_ID]
             if schedule_id in self.schedules:
                 return
-            _LOGGER.info("Migrating schedule {}".format(schedule_id))
         else:
             schedule_id = secrets.token_hex(3)
             while schedule_id in self.schedules:
@@ -307,6 +345,19 @@ class ScheduleStorage:
         self.async_schedule_save()
         return new
 
+    @callback
+    def async_get_time_shutdown(self) -> dict:
+        """Get the shutdown time and clear the stored value afterwards."""
+        res = self.time_shutdown
+        self.time_shutdown = None
+        self.async_schedule_save()
+        return res
+
+    @callback
+    async def async_set_time_shutdown(self, value: str):
+        """Set the shutdown time and store it immediately."""
+        self.time_shutdown = value
+        await self.async_save()
 
 @bind_hass
 async def async_get_registry(hass: HomeAssistant) -> ScheduleStorage:

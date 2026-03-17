@@ -1,8 +1,6 @@
 import logging
 import math
 import time
-import sys
-import fcntl
 from AtlasI2C import (
     AtlasI2C
 )
@@ -45,7 +43,7 @@ def get_device(device_list, name):
 def get_device_with_name(device_list, type, name):
     for device in device_list:
         if (device.moduletype.lower() == type.lower()):
-            cmd = f'name,?'
+            cmd = 'name,?'
             response = device.query(cmd)
             device_name = response.split(',')[1]
             if (device_name.lower() == name.lower()):

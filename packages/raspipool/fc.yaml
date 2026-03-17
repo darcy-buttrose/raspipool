@@ -77,4 +77,4 @@ automation:
     condition: []
     action:
       - service: automation.trigger
-        entity_id: automation.bleach_set
+        entity_id: automation.chlorine_set

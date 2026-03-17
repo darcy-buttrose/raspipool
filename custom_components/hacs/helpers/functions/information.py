@@ -107,7 +107,7 @@ async def get_integration_manifest(repository):
         manifest_path = "manifest.json"
     else:
         manifest_path = f"{repository.content.path.remote}/manifest.json"
-    if not manifest_path in [x.full_path for x in repository.tree]:
+    if manifest_path not in [x.full_path for x in repository.tree]:
         raise HacsException(f"No file found '{manifest_path}'")
     try:
         manifest = await repository.repository_object.get_contents(manifest_path, repository.ref)

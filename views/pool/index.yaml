@@ -8,5 +8,5 @@
 #          - !include update-status/index.yaml
           - !include control/index.yaml
 #          - !include supplies/index.yaml
-          - !include pump-control/index.yaml
+#          - !include pump-control/index.yaml
 #          - !include flow-control/index.yaml

@@ -6,8 +6,8 @@
             name: FC target
           - entity: sensor.e_fc
             name: FC actual
-          - entity: input_number.bleach_inject
-            name: Next bleach injection (ml)
+          - entity: input_number.chlorine_inject
+            name: Next chlorine injection (ml)
           - entity: input_number.e_fc_adjust
             name: Adjust ±% FC-ORP
           - label: pH
@@ -16,7 +16,7 @@
             name: pH target
           - entity: sensor.ph
             name: pH actual
-          - entity: input_number.muriatic_inject
+          - entity: input_number.acid_inject
             name: Next Acid Injection (ml)
         type: entities
         show_header_toggle: false

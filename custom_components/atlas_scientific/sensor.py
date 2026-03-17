@@ -7,16 +7,15 @@ import logging
 import serial
 import io
 import fcntl
-import string
 import time
 
 from homeassistant.helpers.entity import Entity
 from homeassistant.const import (
-	CONF_NAME, CONF_UNIT_OF_MEASUREMENT, CONF_PORT)
+	CONF_NAME, CONF_PORT)
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
-from homeassistant.const import TEMP_CELSIUS, TEMP_FAHRENHEIT
+from homeassistant.const import UnitOfTemperature
 
 _LOGGER = logging.getLogger(__name__)
 CONF_OFFSET = 'offset'
@@ -26,7 +25,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 	vol.Required(CONF_PORT): cv.string,
 	vol.Optional(CONF_NAME, default='ezo'): cv.string,
 	vol.Optional(CONF_OFFSET, default=0.0): vol.Coerce(float),
-	vol.Optional(CONF_SCALE, default=TEMP_CELSIUS): cv.string
+	vol.Optional(CONF_SCALE, default= UnitOfTemperature.CELSIUS): cv.string
 })
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
@@ -56,10 +55,10 @@ class AtlasSensor(Entity):
 		self._scale = lowercase_scale
 		# Identifiers: [ name (from I?), units, icon, auto_sleep ]
 		if lowercase_scale == 'f':
-			temp_uom = TEMP_FAHRENHEIT
+			temp_uom = UnitOfTemperature.FAHRENHEIT
 		else:
 			# default to CELSIUS
-			temp_uom = TEMP_CELSIUS
+			temp_uom = UnitOfTemperature.CELSIUS
 		temp = ['temperature', temp_uom, 'mdi:coolant-temperature', 1]
 		ezos = {
 			"ph": ['ph', 'pH', 'mdi:alpha-h-circle', 1],
@@ -69,7 +68,8 @@ class AtlasSensor(Entity):
 			"d.o.": ['dissolved_oxygen','mV', 'mdi:alpha-x-circle', 0],
 			"ec": ['conductivity', "EC", 'mdi:alpha-c-circle', 0],
 			"rtd": temp,
-			"pmp": ['pump', 'ml','mdi:engine',0]
+			"pmp": ['pump', 'ml','mdi:engine',0],
+			"pmpl": ['pump', 'ml','mdi:engine',0]
 		}
 
 		_LOGGER.debug("Checking port %s", port)

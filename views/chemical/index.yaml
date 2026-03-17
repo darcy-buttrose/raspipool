@@ -2,23 +2,23 @@
     title: Chemical
     icon: 'mdi:flask'
     cards:
-      - title: Muriatic Acid ( decrease pH )
+      - title: Acid ( decrease pH )
         entities:
           - row:
-            entity: input_number.muriatic_tank
+            entity: input_number.acid_tank
             theme: default
             name: Tank Level (l)
-          - entity: input_number.muriatic_concentration
+          - entity: input_number.acid_concentration
             name: Concentration (%)
           - row:
-            entity: input_number.muriatic_speed
+            entity: input_number.acid_speed
             theme: default
             unit: ml/min
             name: Injection Speed (ml/min)
           - entity: switch.ph
             name: Acid Injection Pump
             secondary_info: last-changed
-          - entity: input_boolean.lock_muriatic
+          - entity: input_boolean.lock_acid
             name: Disable Automatic Injection
         type: entities
         show_header_toggle: false
@@ -30,21 +30,21 @@
           title: Sanitizer ( increase ORP )
           entities:
             - row:
-              entity: input_number.bleach_tank
+              entity: input_number.chlorine_tank
               theme: default
               unit: l
               name: Tank Level (l)
-            - entity: input_number.bleach_concentration
+            - entity: input_number.chlorine_concentration
               name: Concentration (%)
             - row:
-              entity: input_number.bleach_speed
+              entity: input_number.chlorine_speed
               theme: default
               unit: ml/min
               name: Injection Speed (ml/min)
             - entity: switch.orp
               name: Chlorine Injection Pump
               secondary_info: last-changed
-            - entity: input_boolean.lock_bleach
+            - entity: input_boolean.lock_chlorine
               name: Disable Automatic Injection
           type: entities
           show_empty: false
@@ -56,9 +56,9 @@
         card:
           title: Salt System ( increase ORP )
           entities:
-            - entity: input_number.bleach_concentration
+            - entity: input_number.chlorine_concentration
               name: Concentration (%)
-            - entity: input_number.bleach_speed
+            - entity: input_number.chlorine_speed
               name: Speed injection
           type: entities
           show_header_toggle: false

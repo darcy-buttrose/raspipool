@@ -15,7 +15,7 @@ from homeassistant.const import (
     ATTR_NAME,
 )
 
-VERSION = "3.2.2"
+VERSION = "3.2.15"
 
 DOMAIN = "scheduler"
 
@@ -36,6 +36,8 @@ MATCH_TYPE_EQUAL = "is"
 MATCH_TYPE_UNEQUAL = "not"
 MATCH_TYPE_BELOW = "below"
 MATCH_TYPE_ABOVE = "above"
+
+ATTR_TRACK_CONDITIONS = "track_conditions"
 
 ATTR_REPEAT_TYPE = "repeat_type"
 REPEAT_TYPE_REPEAT = "repeat"
@@ -71,6 +73,7 @@ EVENT_ITEM_UPDATED = "scheduler_item_updated"
 EVENT_ITEM_CREATED = "scheduler_item_created"
 EVENT_ITEM_REMOVED = "scheduler_item_removed"
 EVENT_STARTED = "scheduler_started"
+EVENT_WORKDAY_SENSOR_UPDATED = "workday_sensor_updated"
 
 STATE_INIT = "init"
 STATE_READY = "ready"
@@ -87,7 +90,7 @@ def validate_time(time):
     else:
         if res.group(1) not in [SUN_EVENT_SUNRISE, SUN_EVENT_SUNSET]:
             raise vol.Invalid("Invalid time entered: {}".format(time))
-        elif res.group(2) not in ['+', '-']:
+        elif res.group(2) not in ["+", "-"]:
             raise vol.Invalid("Invalid time entered: {}".format(time))
         elif not dt_util.parse_time(res.group(3)):
             raise vol.Invalid("Invalid time entered: {}".format(time))
@@ -112,12 +115,7 @@ CONDITION_SCHEMA = vol.Schema(
         vol.Required(ATTR_VALUE): vol.Any(int, float, str),
         vol.Optional(CONF_ATTRIBUTE): cv.string,
         vol.Required(ATTR_MATCH_TYPE): vol.In(
-            [
-                MATCH_TYPE_EQUAL,
-                MATCH_TYPE_UNEQUAL,
-                MATCH_TYPE_BELOW,
-                MATCH_TYPE_ABOVE
-            ]
+            [MATCH_TYPE_EQUAL, MATCH_TYPE_UNEQUAL, MATCH_TYPE_BELOW, MATCH_TYPE_ABOVE]
         ),
     }
 )
@@ -143,13 +141,14 @@ TIMESLOT_SCHEMA = vol.Schema(
                 CONDITION_TYPE_OR,
             ]
         ),
+        vol.Optional(ATTR_TRACK_CONDITIONS): cv.boolean,
         vol.Required(ATTR_ACTIONS): vol.All(
             cv.ensure_list, vol.Length(min=1), [ACTION_SCHEMA]
         ),
     }
 )
 
-SCHEDULE_SCHEMA = vol.Schema(
+ADD_SCHEDULE_SCHEMA = vol.Schema(
     {
         vol.Optional(ATTR_WEEKDAYS, default=[DAY_TYPE_DAILY]): vol.All(
             cv.ensure_list,
@@ -157,7 +156,8 @@ SCHEDULE_SCHEMA = vol.Schema(
             vol.Length(min=1),
             [
                 vol.In(
-                    WEEKDAYS + [
+                    WEEKDAYS
+                    + [
                         DAY_TYPE_WORKDAY,
                         DAY_TYPE_WEEKEND,
                         DAY_TYPE_DAILY,
@@ -178,10 +178,40 @@ SCHEDULE_SCHEMA = vol.Schema(
             ]
         ),
         vol.Optional(ATTR_NAME): vol.Any(cv.string, None),
-        vol.Optional(ATTR_TAGS): vol.All(
+        vol.Optional(ATTR_TAGS): vol.All(cv.ensure_list, vol.Unique(), [cv.string]),
+    }
+)
+
+EDIT_SCHEDULE_SCHEMA = vol.Schema(
+    {
+        vol.Optional(ATTR_WEEKDAYS): vol.All(
             cv.ensure_list,
             vol.Unique(),
-            [cv.string]
+            vol.Length(min=1),
+            [
+                vol.In(
+                    WEEKDAYS
+                    + [
+                        DAY_TYPE_WORKDAY,
+                        DAY_TYPE_WEEKEND,
+                        DAY_TYPE_DAILY,
+                    ]
+                )
+            ],
         ),
+        vol.Optional(ATTR_START_DATE, default=None): validate_date,
+        vol.Optional(ATTR_END_DATE, default=None): validate_date,
+        vol.Optional(ATTR_TIMESLOTS): vol.All(
+            cv.ensure_list, vol.Length(min=1), [TIMESLOT_SCHEMA]
+        ),
+        vol.Optional(ATTR_REPEAT_TYPE): vol.In(
+            [
+                REPEAT_TYPE_REPEAT,
+                REPEAT_TYPE_SINGLE,
+                REPEAT_TYPE_PAUSE,
+            ]
+        ),
+        vol.Optional(ATTR_NAME): vol.Any(cv.string, None),
+        vol.Optional(ATTR_TAGS): vol.All(cv.ensure_list, vol.Unique(), [cv.string]),
     }
 )

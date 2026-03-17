@@ -2,21 +2,21 @@
                 cards:
                   - type: conditional
                     conditions:
-                      - entity: switch.pool_solar_pump
+                      - entity: switch.pool_heater_pump
                         state: "on"
                     card:
                       type: button
-                      entity: switch.pool_solar_pump
+                      entity: switch.pool_heater_pump
                       icon: mdi:engine
                       tap_action:
                         action: toggle
                   - type: conditional
                     conditions:
-                      - entity: switch.pool_solar_pump
+                      - entity: switch.pool_heater_pump
                         state: "off"
                     card:
                       type: button
-                      entity: switch.pool_solar_pump
+                      entity: switch.pool_heater_pump
                       icon: mdi:engine-off
                       tap_action:
                         action: toggle

@@ -1,39 +1,39 @@
 
 recorder:
   purge_keep_days: 7
-  include:
-    entities:
-      - sensor.pump_state
-      - sensor.orp
-      - sensor.orp_stat
-      - sensor.ph
-      - sensor.ph_stat
-      - sensor.pool_temp
-      - sensor.pool_temo_stat
-      - sensor.roof_temp
-      - sensor.roof_temp_stat
-      - sensor.ezo_ph
-      - sensor.ezo_orp
-      - sensor.ezo_pump
-      - sensor.ezo_conductivity
-      - sensor.tds
-      - sensor.tds_stat
-      - sensor.pool_tempurature
-      - sensor.roof_tempurature
-      - sensor.remain_cycles
-      - input_number.muriatic_tank
-      - input_number.bleach_tank
-      - switch.ph
-      - switch.orp
-      - switch.turbo
-      - switch.pump
-      - sensor.e_fc
-      - sensor.flow_on
-      - input_number.off_peak_tariff
-      - input_number.partial_peak_tariff
-      - input_number.peak_tariff
-      - switch.pool_light
-      - switch.pool_solar_pump
-  exclude:
-    entities:
-      - binary_sensor.watermeter
+#  include:
+#    entities:
+#      - sensor.pump_state
+#      - sensor.orp
+#      - sensor.orp_stat
+#      - sensor.ph
+#      - sensor.ph_stat
+#      - sensor.pool_temp
+#      - sensor.pool_temo_stat
+#      - sensor.roof_temp
+#      - sensor.roof_temp_stat
+#      - sensor.ezo_ph
+#      - sensor.ezo_orp
+#      - sensor.ezo_pump
+#      - sensor.ezo_conductivity
+#      - sensor.tds
+#      - sensor.tds_stat
+#      - sensor.pool_tempurature
+#      - sensor.roof_tempurature
+#      - sensor.remain_cycles
+#      - input_number.acid_tank
+#      - input_number.chlorine_tank
+#      - switch.ph
+#      - switch.orp
+#      - switch.turbo
+#      - switch.pump
+#      - sensor.e_fc
+#      - sensor.flow_on
+#      - input_number.off_peak_tariff
+#      - input_number.partial_peak_tariff
+#      - input_number.peak_tariff
+#      - switch.pool_light
+#      - switch.pool_solar_pump
+#  exclude:
+#    entities:
+#      - binary_sensor.watermeter

@@ -1,18 +1,60 @@
-calibrate_ph:
+#calibrate_ph:
+#  sequence:
+#    - service: shell_command.calibrate
+#      data_template:
+#        device: "ph"
+#        target: "{{ states('input_number.calibrate_ph') }}"
+#calibrate_orp:
+#  sequence:
+#    - service: shell_command.calibrate
+#      data_template:
+#        device: "orp"
+#        target: "{{ states('input_number.calibrate_orp') }}"
+#calibrate_temp:
+#  sequence:
+#    - service: shell_command.calibrate
+#      data_template:
+#        device: "rtd"
+#        target: "{{ states('input_number.calibrate_temp') }}"
+dose_acid:
   sequence:
-    - service: shell_command.calibrate
-      data_template:
-        device: "ph"
-        target: "{{ states('input_number.calibrate_ph') }}"
-calibrate_orp:
+    - service: atlas_scientific.dose_by_volume
+      data:
+        entity_id: switch.acid_pump
+        volume: "{{ states('input_number.acid_dosing_amount') }}"
+dose_chlorine:
   sequence:
-    - service: shell_command.calibrate
-      data_template:
-        device: "orp"
-        target: "{{ states('input_number.calibrate_orp') }}"
-calibrate_temp:
+    - service: atlas_scientific.dose_by_volume
+      data:
+        entity_id: switch.chlorine_pump
+        volume: "{{ states('input_number.chlorine_dosing_amount') }}"
+auto_dose_acid:
   sequence:
-    - service: shell_command.calibrate
-      data_template:
-        device: "rtd"
-        target: "{{ states('input_number.calibrate_temp') }}"
+    - service: atlas_scientific.dose_by_volume
+      data:
+        entity_id: switch.acid_pump
+        volume: "{{ states('input_number.auto_acid_dosing_amount') }}"
+auto_dose_chlorine:
+  sequence:
+    - service: atlas_scientific.dose_by_volume
+      data:
+        entity_id: switch.chlorine_pump
+        volume: "{{ states('input_number.auto_chlorine_dosing_amount') }}"
+daily_dose_chlorine:
+  sequence:
+    - service: atlas_scientific.dose_by_volume
+      data:
+        entity_id: switch.chlorine_pump
+        volume: "{{ states('input_number.daily_chlorine_dosing_amount') }}"
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.daily_chlorine_dosing_active
+auto_daily_dose_chlorine:
+  sequence:
+    - service: atlas_scientific.dose_by_volume
+      data:
+        entity_id: switch.chlorine_pump
+        volume: "{{ states('input_number.daily_chlorine_dosing_amount') }}"
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.daily_chlorine_dosing_active

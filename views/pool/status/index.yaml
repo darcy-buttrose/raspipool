@@ -5,7 +5,6 @@
                 cards:
                   - !include ph.yaml
                   - !include orp.yaml
-                  - !include tds.yaml
               - type: horizontal-stack
                 cards:
                   - !include pool-temp.yaml

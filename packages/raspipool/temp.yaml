@@ -3,21 +3,25 @@ sensor:
   - platform: atlas_scientific
     port: 0x6E # 110
     name: pool
-    scan_interval: 30
+    scan_interval: 10
 
 # Atlas Resistance Temperature Detector (RTD)
   - platform: atlas_scientific
     port: 0x66 # 102
     name: roof
-    scan_interval: 30
+    scan_interval: 10
 
   - platform: statistics
     name: pool_temp_stat
     entity_id: sensor.pool_temperature
+    state_characteristic: mean
+    sampling_size: 6
 
   - platform: statistics
     name: roof_temp_stat
     entity_id: sensor.roof_temperature
+    state_characteristic: mean
+    sampling_size: 6
 
   - platform: template
     sensors:
@@ -75,33 +79,32 @@ input_number:
     step: .5
     unit_of_measurement: 'C'
     icon: mdi:coolant-temperature
-    initial: 25
+    initial: 20
   temp_range_high:
     min: 20
     max: 35
     step: .5
     unit_of_measurement: 'C'
     icon: mdi:coolant-temperature
-    initial: 28
   temp_check_delay:
     min: 1
     max: 15
     step: 1
     unit_of_measurement: 'minutes'
     icon: mdi:clock-start
-    initial: 2
   temp_check_window:
     min: 1
     max: 120
     step: 1
     unit_of_measurement: 'minutes'
     icon: mdi:repeat
-    initial: 60
 
 input_boolean:
-  solar_pump_active:
-    initial: true
+  solar_heat_mode:
+    initial: false
   solar_pump_on:
+    initial: false
+  solar_pump_maint:
     initial: false
   solar_pump_running:
     initial: false
@@ -156,10 +159,29 @@ automation:
     action:
       - entity_id: input_boolean.solar_pump_running
         service: input_boolean.turn_off
+
   - alias: Solar Pump Off Imediate
     trigger:
       - platform: template
         value_template: "{{ is_state('input_boolean.solar_pump_on', 'off') }}"
+    condition: []
+    action:
+      - entity_id: input_boolean.solar_pump_running
+        service: input_boolean.turn_off
+
+  - alias: Solar Pump Maint On Imediate
+    trigger:
+      - platform: template
+        value_template: "{{ is_state('input_boolean.solar_pump_maint', 'on') }}"
+    condition: []
+    action:
+      - entity_id: input_boolean.solar_pump_running
+        service: input_boolean.turn_on
+
+  - alias: Solar Pump Maint Off Imediate
+    trigger:
+      - platform: template
+        value_template: "{{ is_state('input_boolean.solar_pump_maint', 'off') }}"
     condition: []
     action:
       - entity_id: input_boolean.solar_pump_running

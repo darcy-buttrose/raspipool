@@ -31,9 +31,6 @@ mobile_app:
 script: !include scripts.yaml
 shell_command:
   calibrate: 'python calibrate.py "{{ device }}" "{{ target }}"'
-pyscript:
-  allow_all_imports: true
-  hass_is_global: true
 # python_script:
 # sspd:
 sun:
@@ -48,6 +45,7 @@ logger:
   default: info
   logs:
     custom_components.atlas_scientific.sensor: debug
+    custom_components.atlas_scientific.switch: debug
     custom_components.scheduler: debug
     homeassistant.components.switch.command_line: debug
     homeassistant.components.homekit: debug
@@ -61,7 +59,7 @@ group: !include groups.yaml
 #  expose_by_default: false
 #  entities:
 #    switch.pump:
-#      name: Pump
+#      name: [-0cvp.7,mnbv]
 #      hidden: false
 #    switch.ph:
 #      name: Acid Pump
@@ -75,7 +73,13 @@ group: !include groups.yaml
 lovelace:
   mode: yaml
   resources:
-    - url: /local/scheduler-card/scheduler-card.js?v=0
+    - url: /hacsfiles/scheduler-card/scheduler-card.js
+      type: module
+    - url: /hacsfiles/kiosk-mode/kiosk-mode.js
+      type: module
+    - url: /hacsfiles/lovelace-card-templater/lovelace-card-templater.js
+      type: module
+    - url: /hacsfiles/numberbox-card/numberbox-card.js
       type: module
 system_log:
    max_entries: 500

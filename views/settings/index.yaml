@@ -2,5 +2,5 @@
     title: Settings
     icon: 'mdi:tune'
     cards:
-      - !include pool-settings.yaml
+#      - !include pool-settings.yaml
       - !include chemical-settings.yaml

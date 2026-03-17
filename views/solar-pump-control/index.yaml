@@ -15,8 +15,14 @@
             entities:
               - entity: input_boolean.solar_pump_on
                 name: Solar Pump On
+              - entity: input_boolean.solar_pump_maint
+                name: Solar Pump Maint
               - entity: input_boolean.solar_pump_running
                 name: Solar Pump Running
+              - entity: input_number.temp_range_low
+                name: Low Pool Tempurature
+              - entity: input_number.temp_range_high
+                name: High Pool Tempurature
               - entity: sensor.minutes_since_solar_pump_change
                 name: Minutes Since Solar Pump Change
               - entity: sensor.distance_from_window_boundary
@@ -35,20 +41,25 @@
                 name: Pool Temp Higher Than Roof Temp
               - entity: binary_sensor.turn_solar_pump_off
                 name: Turn Pump Off
-      - title: Solar Pump Control
-        entities:
-          - entity: input_boolean.solar_pump_active
-            name: Activate Solar Pump
-          - entity: input_number.temp_range_low
-            theme: default
-            name: Low Temporature
-          - entity: input_number.temp_range_high
-            theme: default
-            name: High Tempurature
-          - entity: input_number.temp_check_delay
-            theme: default
-            name: Delay
-          - entity: input_number.temp_check_window
-            name: Window
-        type: entities
-        show_header_toggle: false
+      - title: Solar Maintenance Schedule
+        type: custom:scheduler-card
+        standard_configuration: True
+        am_pm: True
+        discover_existing: true
+        include:
+          - input_boolean.solar_pump_maint
+#      - title: Solar Pump Control
+#        entities:
+#          - entity: input_number.temp_range_low
+#            theme: default
+#            name: Low Temporature
+#          - entity: input_number.temp_range_high
+#            theme: default
+#            name: High Tempurature
+#          - entity: input_number.temp_check_delay
+#            theme: default
+#            name: Delay
+#          - entity: input_number.temp_check_window
+#            name: Window
+#        type: entities
+#        show_header_toggle: false

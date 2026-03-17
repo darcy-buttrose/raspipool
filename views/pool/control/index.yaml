@@ -3,3 +3,4 @@
             cards:
               - !include light/index.yaml
               - !include solar-pump/index.yaml
+              - !include flow-pump/index.yaml

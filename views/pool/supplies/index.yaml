@@ -13,7 +13,7 @@
                 type: gauge
               - card:
                   type: gauge
-                  entity: input_number.muriatic_tank
+                  entity: input_number.acid_tank
                   max: 76
                   min: 0
                   theme: default
@@ -23,7 +23,7 @@
                     yellow: 5
               - card:
                   type: gauge
-                  entity: input_number.bleach_tank
+                  entity: input_number.chlorine_tank
                   max: 76
                   min: 0
                   theme: default
