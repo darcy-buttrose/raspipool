@@ -1,0 +1,13 @@
+                type: vertical-stack
+                cards:
+                  - max: 10
+                    min: 0
+                    theme: Backend-selected
+                    entity: sensor.e_fc
+                    needle: true
+                    severity:
+                      green: 3
+                      yellow: 5
+                      red: 0
+                    name: FC
+                    type: gauge

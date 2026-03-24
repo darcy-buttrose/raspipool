@@ -2,6 +2,7 @@ sensor:
 # Atlas Resistance Temperature Detector (RTD)
   - platform: atlas_scientific
     port: 0x64 # 100
+    name: 'ezo_conductivity'
     scan_interval: 30
 
   - platform: statistics

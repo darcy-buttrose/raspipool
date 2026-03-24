@@ -1,0 +1,50 @@
+    title: Chlorine
+    panel: false
+    icon: 'mdi:flask'
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: entities
+            entities:
+              - entity: input_boolean.lock_chlorine
+                name: Chlorine Pump Lock On
+              - entity: input_number.chlorine_dosing_amount
+                type: custom:numberbox-card
+                name: Chlorine Dosing Amount
+              - entity: input_button.chlorine_dose
+              - entity: input_number.daily_chlorine_dosing_amount
+                type: custom:numberbox-card
+                name: Daily Chlorine Dosing Amount
+              - entity: input_button.daily_chlorine_dose
+
+          - title: Chlorine Dosing Schedule
+            type: custom:scheduler-card
+            standard_configuration: True
+            am_pm: True
+            discover_existing: true
+            include:
+              - input_boolean.auto_chlorine_dosing_window
+
+          - title: Daily Chlorine Dosing Schedule
+            type: custom:scheduler-card
+            standard_configuration: True
+            am_pm: True
+            discover_existing: true
+            include:
+              - input_boolean.daily_chlorine_dosing_active
+
+
+          - type: entities
+            entities:
+              - entity: input_number.auto_chlorine_dosing_amount
+                type: custom:numberbox-card
+                name: Auto Chlorine Dose Amount
+              - entity: input_boolean.auto_chlorine_dosing_window
+              - entity: sensor.time_since_chlorine_dose_window_change
+              - entity: input_number.auto_chlorine_dosing_spacing
+                type: custom:numberbox-card
+                name: Auto Chlorine Dose Spacing
+              - entity: sensor.distance_from_chlorine_dose_window_boundary
+              - entity: input_button.dummy_auto_chlorine_dose
+              - entity: input_button.auto_chlorine_dose
+

@@ -7,12 +7,15 @@ import logging
 import serial
 import io
 import fcntl
+import string
 import asyncio
 
 from homeassistant.const import (CONF_NAME, CONF_PORT)
 from homeassistant.components.switch import PLATFORM_SCHEMA, SwitchEntity
-from homeassistant.helpers import config_validation as cv, entity_platform
+from homeassistant.helpers import config_validation as cv, entity_platform, service
 import voluptuous as vol
+import homeassistant.helpers.config_validation as cv
+import pprint
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

@@ -2,21 +2,21 @@
                 cards:
                   - type: conditional
                     conditions:
-                      - entity: valve.pool_solar_pump_water
+                      - entity: valve.pool_filter_pump_water
                         state: "open"
                     card:
                       type: button
-                      entity: valve.pool_solar_pump_water
+                      entity: valve.pool_filter_pump_water
                       icon: mdi:engine
                       tap_action:
                         action: toggle
                   - type: conditional
                     conditions:
-                      - entity: valve.pool_solar_pump_water
+                      - entity: valve.pool_filter_pump_water
                         state: "closed"
                     card:
                       type: button
-                      entity: valve.pool_solar_pump_water
+                      entity: valve.pool_filter_pump_water
                       icon: mdi:engine-off
                       tap_action:
                         action: toggle

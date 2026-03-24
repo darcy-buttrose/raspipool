@@ -1,0 +1,88 @@
+switch:
+  - platform: atlas_scientific
+    port: 0x6f # 111
+    name: 'acid_pump'
+
+sensor:
+  - platform: template
+    sensors:
+      time_since_acid_dose_window_change:
+        value_template: >
+          {{ (((now().timestamp() | float) - (states.input_boolean.auto_acid_dosing_window.last_changed.timestamp() | float)) / 60) | float }}
+      distance_from_acid_dose_window_boundary:
+        value_template: >-
+          {{ ( ( states('sensor.time_since_acid_dose_window_change') | float ) % ( ( states('input_number.auto_acid_dosing_spacing') | float )) ) | int }}
+
+
+input_boolean:
+  lock_acid:
+    icon: mdi:lock
+  auto_acid_dosing_window:
+    name: Auto Dose Acid Window
+  dummy_auto_acid_dose:
+    name: Dummy Auto Dose Acid
+
+binary_sensor:
+  - platform: template
+    sensors:
+      acid:
+        friendly_name: "Acid pump"
+#        entity_id:
+#          - switch.ph
+#          - input_boolean.lock_acid
+        device_class: plug
+        value_template: "{{ is_state('switch.acid_pump', True) }}"
+        icon_template: >-
+          {% if is_state('input_boolean.lock_acid', 'on') %}
+            mdi:lock
+          {% endif %}
+
+input_number:
+  acid_dosing_amount:
+    min: 5
+    max: 500
+    step: 5
+    unit_of_measurement: 'ml'
+  auto_acid_dosing_amount:
+    min: 5
+    max: 500
+    step: 5
+    unit_of_measurement: 'ml'
+  auto_acid_dosing_spacing:
+    min: 5
+    max: 120
+    step: 5
+    unit_of_measurement: 'min'
+
+input_button:
+  acid_dose:
+    name: Dose Acid
+  auto_acid_dose:
+    name: Auto Dose Acid
+  dummy_auto_acid_dose:
+    name: Dummy Auto Dose Acid
+
+automation:
+  - alias: Acid Dose
+    id: acid_dose
+    trigger:
+      - platform: state
+        entity_id: input_button.acid_dose
+    action:
+      - service: script.dose_acid
+  - alias: Auto Acid Dose
+    id: auto_acid_dose
+    trigger:
+      - platform: state
+        entity_id: input_button.auto_acid_dose
+    action:
+      - service: script.auto_dose_acid
+  - alias: Auto Acid Dose Window Distance Zero
+    id: auto_acid_dose_window_distance_zero
+    trigger:
+      - platform: template
+        value_template: "{{ is_state('sensor.distance_from_acid_dose_window_boundary', '0') and is_state('input_boolean.auto_acid_dosing_window', 'on') and is_state('valve.pool_filter_pump_water', 'open') }}"
+    action:
+      - service: input_button.press
+        target:
+          entity_id: input_button.auto_acid_dose

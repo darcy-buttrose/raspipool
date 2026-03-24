@@ -45,7 +45,7 @@ automation:
       to: 'on'
     condition:
     - condition: state
-      entity_id: switch.pump
+      entity_id: valve.pool_filter_pump_water
       state: 'off'
     action:
     - service: switch.turn_off

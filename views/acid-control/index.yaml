@@ -1,0 +1,36 @@
+    title: Acid
+    panel: false
+    icon: 'mdi:ph'
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: entities
+            entities:
+              - entity: input_boolean.lock_acid
+                name: Acid Pump Lock On
+              - entity: input_number.acid_dosing_amount
+                type: custom:numberbox-card
+                name: Acid Dosing Amount
+              - entity: input_button.acid_dose
+
+          - title: Acid Dosing Schedule
+            type: custom:scheduler-card
+            standard_configuration: True
+            am_pm: True
+            discover_existing: true
+            include:
+              - input_boolean.auto_acid_dosing_window
+
+          - type: entities
+            entities:
+              - entity: input_number.auto_acid_dosing_amount
+                type: custom:numberbox-card
+                name: Auto Acid Dosing Amount
+              - entity: input_boolean.auto_acid_dosing_window
+              - entity: sensor.time_since_acid_dose_window_change
+              - entity: input_number.auto_acid_dosing_spacing
+                type: custom:numberbox-card
+                name: Auto Acid Dosing Spacing
+              - entity: sensor.distance_from_acid_dose_window_boundary
+              - entity: input_button.dummy_auto_acid_dose
+              - entity: input_button.auto_acid_dose

@@ -106,8 +106,8 @@ automation:
     # when the pump starts, take care of all chemicals
     trigger:
     - platform: state
-      entity_id: switch.pump
-      to: 'on'
+      entity_id: valve.pool_filter_pump_water
+      to: 'open'
     condition: []
     action:
     - entity_id: automation.ph_bad
@@ -130,8 +130,8 @@ automation:
     # when the pump starts, turn on the turbo for a few minutes (to help priming)
     trigger:
     - platform: state
-      entity_id: switch.pump
-      to: 'on'
+      entity_id: valve.pool_filter_pump_water
+      to: 'open'
     condition:
     - condition: state
       entity_id: input_boolean.turbo
@@ -152,7 +152,7 @@ automation:
   # ensure injection is stopped when pump stops
     trigger:
     - platform: state
-      entity_id: switch.pump
+      entity_id: valve.pool_filter_pump_water
       to: 'off'
     condition: []
     action:
@@ -189,7 +189,7 @@ automation:
         message: 'TODO'
         title: "TODO: pump ran more than the required {{states('sensor.ttr_low_speed')}}"
     - service: switch.turn_off
-      entity_id: switch.pump
+      entity_id: valve.pool_filter_pump_water
 
   - alias: check_cummulative_time_high
     # stop the pump if it ran enough
@@ -222,7 +222,7 @@ automation:
       condition: and
       conditions:
         - condition: state
-          entity_id: switch.pump
+          entity_id: valve.pool_filter_pump_water
           state: 'on'
           for:
             minutes: 5
@@ -252,10 +252,10 @@ automation:
     condition: []
     action:
     - service: switch.turn_on
-      entity_id: switch.pump
+      entity_id: valve.pool_filter_pump_water
     - delay: "{{states('input_number.boost_for')|int}}:{{((states('input_number.boost_for')|float % 1)*60)|int}}:0"
     - service: switch.turn_off
-      entity_id: switch.pump
+      entity_id: valve.pool_filter_pump_water
     - service: input_number.set_value
       data:
         entity_id: input_number.boost_for

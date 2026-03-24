@@ -90,14 +90,14 @@
           am_pm: True
           discover_existing: false
           include:
-            - switch.pump
+            - valve.pool_filter_pump_water
           groups:
             - name: "Main Pump"
               icon: mdi:car-turbocharger
               include:
-                - switch.pump
+                - valve.pool_filter_pump_water
           customize:
-            switch.pump:
+            valve.pool_filter_pump_water:
               actions:
                 - service: turn_on
                 - service: turn_off

@@ -1,0 +1,111 @@
+switch:
+  - platform: atlas_scientific
+    port: 0x6d # 109
+    name: 'chlorine_pump'
+
+sensor:
+  - platform: template
+    sensors:
+      time_since_chlorine_dose_window_change:
+        value_template: >
+          {{ (((now().timestamp() | float) - (states.input_boolean.auto_chlorine_dosing_window.last_changed.timestamp() | float)) / 60) | float }}
+      distance_from_chlorine_dose_window_boundary:
+        value_template: >-
+          {{ ( ( states('sensor.time_since_chlorine_dose_window_change') | float ) % ( ( states('input_number.auto_chlorine_dosing_spacing') | float )) ) | int }}
+
+input_boolean:
+  lock_chlorine:
+    icon: mdi:lock
+  auto_chlorine_dosing_window:
+    name: Auto Dose Chlorine Window
+  daily_chlorine_dosing_active:
+    name: Daily Chlorine Dosing Active
+
+binary_sensor:
+  - platform: template
+    sensors:
+      chlorine:
+        friendly_name: "Chlorine pump"
+#        entity_id:
+#          - switch.orp
+#          - input_boolean.lock_chlorine
+        device_class: plug
+        value_template: "{{ is_state('switch.chlorine_pump', 'on') }}"
+        icon_template: >-
+          {% if is_state('input_boolean.lock_chlorine', 'on') %}
+            mdi:lock
+          {% endif %}
+
+
+input_number:
+  chlorine_dosing_amount:
+    min: 10
+    max: 500
+    step: 5
+    unit_of_measurement: 'ml'
+  auto_chlorine_dosing_amount:
+    min: 10
+    max: 500
+    step: 5
+    unit_of_measurement: 'ml'
+  auto_chlorine_dosing_spacing:
+    min: 1
+    max: 120
+    step: 1
+    unit_of_measurement: 'min'
+  daily_chlorine_dosing_amount:
+    min: 125
+    max: 500
+    step: 25
+    unit_of_measurement: 'ml'
+
+input_button:
+  chlorine_dose:
+    name: Dose Chlorine
+  auto_chlorine_dose:
+    name: Auto Dose Chlorine
+  dummy_auto_chlorine_dose:
+    name: Dummy Auto Dose Chlorine
+  daily_chlorine_dose:
+    name: Daily Dose Chlorine
+
+automation:
+  - alias: Chlorine Dose
+    id: chlorine_dose
+    trigger:
+      - platform: state
+        entity_id: input_button.chlorine_dose
+    action:
+      - service: script.dose_chlorine
+  - alias: Auto Chlorine Dose
+    id: auto_chlorine_dose
+    trigger:
+      - platform: state
+        entity_id: input_button.auto_chlorine_dose
+    action:
+      - service: script.auto_dose_chlorine
+  - alias: Auto Chlorine Dose Window Distance Zero
+    id: auto_chlorine_dose_window_distance_zero
+    trigger:
+      - platform: template
+        value_template: "{{ is_state('sensor.distance_from_chlorine_dose_window_boundary', '0') and is_state('input_boolean.auto_chlorine_dosing_window', 'on') and is_state('valve.pool_filter_pump_water', 'open') }}"
+    action:
+      - service: input_button.press
+        target:
+          entity_id: input_button.auto_chlorine_dose
+  - alias: Daily Chlorine Dose
+    id: daily_chlorine_dose
+    trigger:
+      - platform: state
+        entity_id: input_button.daily_chlorine_dose
+    action:
+      - service: script.daily_dose_chlorine
+  - alias: Auto Daily Chlorine Dose
+    id: auto_daily_chlorine_dose
+    trigger:
+      - platform: state
+        entity_id: input_boolean.daily_chlorine_dosing_active
+        to: "on"
+        from: "off"
+    action:
+      - service: script.auto_daily_dose_chlorine

@@ -26,14 +26,14 @@ recorder:
 #      - switch.ph
 #      - switch.orp
 #      - switch.turbo
-#      - switch.pump
+#      - valve.pool_filter_pump_water
 #      - sensor.e_fc
 #      - sensor.flow_on
 #      - input_number.off_peak_tariff
 #      - input_number.partial_peak_tariff
 #      - input_number.peak_tariff
 #      - switch.pool_light
-#      - switch.pool_solar_pump
+#      - valve.pool_solar_pump_water
 #  exclude:
 #    entities:
 #      - binary_sensor.watermeter

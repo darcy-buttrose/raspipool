@@ -2,13 +2,13 @@ sensor:
 # Atlas Resistance Temperature Detector (RTD)
   - platform: atlas_scientific
     port: 0x6E # 110
-    name: pool
+    name: 'pool_temperature'
     scan_interval: 10
 
 # Atlas Resistance Temperature Detector (RTD)
   - platform: atlas_scientific
     port: 0x66 # 102
-    name: roof
+    name: 'roof_temperature'
     scan_interval: 10
 
   - platform: statistics
@@ -195,8 +195,8 @@ automation:
     action:
       - service: input_boolean.turn_on
         entity_id: input_boolean.dummy_pump
-      - service: switch.turn_on
-        entity_id: switch.pool_solar_pump
+      - service: valve.open_valve
+        entity_id: valve.pool_solar_pump_water
 
 
   - alias: Real Solar Pump Off
@@ -205,7 +205,7 @@ automation:
         value_template: "{{ is_state('binary_sensor.solar_pump_running','off') }}"
     condition: []
     action:
-      - service: switch.turn_off
-        entity_id: switch.pool_solar_pump
+      - service: valve.close_valve
+        entity_id: valve.pool_solar_pump_water
 
 

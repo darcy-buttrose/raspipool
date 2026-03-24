@@ -1,0 +1,15 @@
+[project]
+name = "raspipool"
+version = "0.1.0"
+description = "Add your description here"
+requires-python = ">=3.14"
+dependencies = [
+    "homeassistant",
+    "pyserial"
+]
+
+[tool.ruff.lint]
+ignore = [
+    "F841",
+    "E701"
+]

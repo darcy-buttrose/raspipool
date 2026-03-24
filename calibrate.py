@@ -3,6 +3,7 @@
 import math
 import time
 import sys
+import fcntl
 from AtlasI2C import (
     AtlasI2C
 )

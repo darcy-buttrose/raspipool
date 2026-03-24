@@ -7,6 +7,7 @@ import sys
 import fcntl
 import time
 import copy
+import string
 
 
 class AtlasI2C:
