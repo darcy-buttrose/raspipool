@@ -1,0 +1,13 @@
+{
+  "domain": "strands_agents_ai_task",
+  "name": "Strands Agents AI Task",
+  "codeowners": ["@darcy"],
+  "dependencies": ["conversation"],
+  "documentation": "https://github.com/darcy-buttrose/raspipool",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "requirements": [
+    "strands-agents>=1.33.0"
+  ]
+
+}

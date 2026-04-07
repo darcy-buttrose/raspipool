@@ -4,6 +4,7 @@ sensor:
 #   port: /dev/ttyUSB0
 # For I2C enter the hex device id
     port: 0x62 # 98
+    name: ezo_orp
 #    offset: 78
     scan_interval: 2
     # scan_interval: 31536000
@@ -54,7 +55,7 @@ automation:
   - alias: orp_bad
     trigger:
     - platform: template
-      value_template: '{{state_attr("sensor.orp", "standard_deviation") > 20 }}'
+      value_template: '{{state_attr("sensor.orp", "standard_deviation")|float(0.0) > 20 }}'
     condition: []
     action:
     - service: notify.notify

@@ -205,6 +205,8 @@ automation:
         value_template: "{{ is_state('binary_sensor.solar_pump_running','off') }}"
     condition: []
     action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.dummy_pump
       - service: valve.close_valve
         entity_id: valve.pool_solar_pump_water
 

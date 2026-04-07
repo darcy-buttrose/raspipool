@@ -58,84 +58,6 @@ class AtlasSwitch(SwitchEntity):
     default_i2dev = "/dev/i2c-1"    # the default bus for I2C on the newer Raspberry Pis, certain older boards use bus 0
     auto_sleep = 1              # enable auto sleep mode after readings
 
-    def __init__(self, name, port):
-        """Initialize the sensor."""
-        self._state = None
-        self._name = name
-        self._port_name = port
-        self._port_number = int(port, 0)
-
-    async def async_added_to_hass(self):
-        logger.debug(f"{self._name}({self._port_name}) ==> async_added_to_hass - started")
-        
-        ezos = {
-            "pmp": ['pump', 'ml','mdi:engine',0],
-            "pmpl": ['pump', 'ml','mdi:engine',0]
-        }
-
-        logger.debug("{self._name}({self._port_name}) ==> Checking port %s", self._port_number)
-        if(self._port_number > 0):
-            self.io_mode = 1 # switch to I2C communication
-            logger.info("I2C for Atlas EZO @%02x", self._port_number)
-            self.file_read = io.open(self.default_i2dev, "rb", buffering=0)
-            self.file_write = io.open(self.default_i2dev, "wb", buffering=0)
-
-            # initializes I2C to the given port/address
-            self.set_i2c_address(self._port_number)
-
-        else:
-            self.io_mode = 0 # serial
-            logger.info("Serial for Atlas EZO @%s", self._port_number)
-            self.ser = serial.Serial(port=self._port_name, baudrate=9600, timeout=3, write_timeout=3)
-
-            # Reset buffer
-            await self._read("")
-            # Get Status
-            status = await self._read("Status")
-            # Set response ON
-            ok = await self._read("*OK,1")
-            ok += await self._read("RESPONSE,1")
-            # Set continuos  mode OFF
-            c = await self._read("C,0")
-
-        # Get kind of EZO
-        self._ezo_dev = None
-        for i in range(5):
-            ezo = await self._read("I")
-            logger.debug(f"{self._name}({self._port_name}) ==> I -> check: " + ezo)
-            if ezo is not None:
-                ezo = ezo.lower().split(',')
-                if len(ezo)>2 and ezo[1] in ezos:
-                    self._ezo_dev = ezos[ezo[1]][0]
-                    self._ezo_uom = ezos[ezo[1]][1]
-                    self._ezo_icon = ezos[ezo[1]][2]
-                    self.auto_sleep = ezos[ezo[1]][3]
-                    self._ezo_fwversion = ezo[2]
-                    self._name += ("_" + self._ezo_dev)
-                    logger.info(f"{self._name}({self._port_name}) ==> Atlas EZO '{self._ezo_dev}' version {self._ezo_fwversion} detected")
-                    break
-        if self._ezo_dev is None:
-            logger.error(f"{self._name}({self._port_name}) ==> Atlas EZO device error or unsupported")
-        
-        logger.debug(f"{self._name}({self._port_name}) ==> async_added_to_hass - finished")
-
-    async def dose_by_volume(self, volume):
-        logger.debug(f"dose_by_volume for {self._name} with {volume}")
-        try:
-            cmd = f"D,{volume}"
-            r = await self._read(cmd)
-            logger.debug(f"dose_by_volume for {cmd}/{cmd} => {r}")
-        except Exception as e:
-            logger.error(repr(e))
-
-    def set_i2c_address(self, addr):
-        # set the I2C communications to the slave specified by the address
-        # The commands for I2C dev using the ioctl functions are specified in
-        # the i2c-dev.h file from i2c-tools
-        I2C_SLAVE = 0x703
-        fcntl.ioctl(self.file_read, I2C_SLAVE, addr)
-        fcntl.ioctl(self.file_write, I2C_SLAVE, addr)
-
     @property
     def name(self):
         """Return the name of the switch."""
@@ -176,9 +98,90 @@ class AtlasSwitch(SwitchEntity):
         """Return the unit of measurement."""
         return self._ezo_uom
 
+    def __init__(self, name, port):
+        """Initialize the sensor."""
+        self._state = None
+        self._name = name
+        self._port_name = port
+        self._port_number = int(port, 0)
+
+    async def async_added_to_hass(self):
+        logger.debug(f"{self._name}({self._port_name}) ==> async_added_to_hass - started")
+        
+        ezos = {
+            "pmp": ['pump', 'ml','mdi:engine',0],
+            "pmpl": ['pump', 'ml','mdi:engine',0]
+        }
+
+        logger.debug("{self._name}({self._port_name}) ==> Checking port %s", self._port_number)
+        if(self._port_number > 0):
+            self.io_mode = 1 # switch to I2C communication
+            logger.info(f"{self._name}({self._port_name}) I2C for Atlas EZO port({self._port_number})")
+            self.file_read = io.open(self.default_i2dev, "rb", buffering=0)
+            self.file_write = io.open(self.default_i2dev, "wb", buffering=0)
+
+            # initializes I2C to the given port/address
+            self.set_i2c_address(self._port_number)
+
+        else:
+            self.io_mode = 0 # serial
+            logger.info(f"{self._name}({self._port_name}) Serial for Atlas EZO port({self._port_number})")
+            self.ser = serial.Serial(port=self._port_name, baudrate=9600, timeout=3, write_timeout=3)
+
+            # Reset buffer
+            await self._read("")
+            # Get Status
+            status = await self._read("Status")
+            # Set response ON
+            ok = await self._read("*OK,1")
+            ok += await self._read("RESPONSE,1")
+            # Set continuos  mode OFF
+            c = await self._read("C,0")
+
+        # Get kind of EZO
+        self._ezo_dev = None
+        for i in range(5):
+            ezo = await self._read("I")
+            logger.debug(f"{self._name}({self._port_name}) ==> I -> check: " + ezo)
+            if ezo is not None:
+                ezo = ezo.lower().split(',')
+                if len(ezo)>2 and ezo[1] in ezos:
+                    self._ezo_dev = ezos[ezo[1]][0]
+                    self._ezo_uom = ezos[ezo[1]][1]
+                    self._ezo_icon = ezos[ezo[1]][2]
+                    self.auto_sleep = ezos[ezo[1]][3]
+                    self._ezo_fwversion = ezo[2]
+                    # self._name += ("_" + self._ezo_dev)
+                    # self._attr_name = self._name
+                    logger.info(f"{self._name}({self._port_name}) ==> Atlas EZO '{self._ezo_dev}' version {self._ezo_fwversion} detected")
+                    break
+        if self._ezo_dev is None:
+            logger.error(f"{self._name}({self._port_name}) ==> Atlas EZO device error or unsupported")
+
+        # self.async_write_ha_state()
+
+        logger.debug(f"{self._name}({self._port_name}) ==> async_added_to_hass - finished")
+
+    async def dose_by_volume(self, volume):
+        logger.debug(f"dose_by_volume for {self._name} with {volume}")
+        try:
+            cmd = f"D,{volume}"
+            r = await self._read(cmd)
+            logger.debug(f"dose_by_volume for {cmd}/{cmd} => {r}")
+        except Exception as e:
+            logger.error(repr(e))
+
+    def set_i2c_address(self, addr):
+        # set the I2C communications to the slave specified by the address
+        # The commands for I2C dev using the ioctl functions are specified in
+        # the i2c-dev.h file from i2c-tools
+        I2C_SLAVE = 0x703
+        fcntl.ioctl(self.file_read, I2C_SLAVE, addr)
+        fcntl.ioctl(self.file_write, I2C_SLAVE, addr)
+
     def i2c_write(self, cmd):
         # appends the null character and sends the string over I2C
-        logger.debug(f"{self._name}({self._port_name}) ==> I2C write cmd: " + cmd)
+        logger.debug(f"{self._name}({self._port_name}) ==> I2C write cmd: {cmd}")
         cmd += "\00"
         cmd = cmd.encode()
         return self.file_write.write(cmd)
@@ -195,7 +198,7 @@ class AtlasSwitch(SwitchEntity):
             return ''.join(char_list)     # convert the char list to a string and returns it
         else:
             char_list = map(lambda x: chr(x & ~0x80), list(response[1:]))
-            logger.error(f"I2C read error({str(response[0])}) => " + ''.join(char_list))
+            logger.error(f"{self._name}({self._port_name}) ==> I2C read error({str(response[0])}) => " + ''.join(char_list))
             return ''
 
     async def _read(self,command="D,?",terminator="\r*OK\r"):

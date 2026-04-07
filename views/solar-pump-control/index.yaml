@@ -14,11 +14,13 @@
           - type: entities
             entities:
               - entity: input_boolean.solar_pump_on
-                name: Solar Pump On
+                name: Solar Pump On (input_boolean.solar_pump_on)
               - entity: input_boolean.solar_pump_maint
-                name: Solar Pump Maint
+                name: Solar Pump Maint (input_boolean.solar_pump_maint)
               - entity: input_boolean.solar_pump_running
-                name: Solar Pump Running
+                name: Solar Pump Running (input_boolean.solar_pump_running)
+              - entity: binary_sensor.solar_pump_running
+                name: Solar Pump Running (binary_sensor.solar_pump_running)
               - entity: input_number.temp_range_low
                 name: Low Pool Tempurature
               - entity: input_number.temp_range_high
@@ -35,8 +37,14 @@
                 name: On Window
               - entity: binary_sensor.pool_temp_check
                 name: Check Pool Temp
+              - entity: sensor.roof_temp
+                name: Roof Temp
+              - entity: sensor.pool_temp
+                name: Pool Temp
               - entity: binary_sensor.pool_temp_to_high
                 name: Pool Temp To High
+              - entity: binary_sensor.pool_temp_to_low
+                name: Pool Temp To Low
               - entity: binary_sensor.pool_temp_higher_than_roof_temp
                 name: Pool Temp Higher Than Roof Temp
               - entity: binary_sensor.turn_solar_pump_off

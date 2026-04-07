@@ -1,0 +1,46 @@
+action: ai_task.generate_data
+target: {}
+data:
+  task_name: Test
+  instructions: >-
+    You are a pool chemistry expert and I would like you to balance my pool
+    chemistry. My pool currently has a ph of {{ states('sensor.ezo_ph')  }} and
+    an orp of {{ states('sensor.ezo_orp') }}. My pool volume is 30,000 liters.
+    How many millaliters of muriatic acid and liquid chlorine do I need to put in
+    the pool and how long I should wait for the chemicals to have the desired effect.
+  structure:
+    original_ph:
+      description: The current ph of the pool
+      required: true
+      selector:
+        number: {}
+    original_orp:
+      description: The current orp of the pool
+      required: true
+      selector:
+        number: {}
+    target_ph:
+      description: The target ph of the pool
+      required: true
+      selector:
+        number: {}
+    target_orp:
+      description: The target orp of the pool
+      required: true
+      selector:
+        number: {}
+    muriatic_acid:
+      description: The number representing the millilitres of muriatic acid required to reduce the ph to its required level
+      required: true
+      selector:
+        number: {}
+    liquid_chlorine:
+      description: The number representing the millilitres of liquid chlorine required to increase the orp to its required level
+      required: true
+      selector:
+        number: {}
+    wait_time:
+      description: The amount of minutes in time that i should wait before i check my orp and ph levels again.
+      required: true
+      selector:
+        number: {}

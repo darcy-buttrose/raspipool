@@ -30,12 +30,18 @@ logger = logging.getLogger(__name__)
 
 async def async_setup_platform(hass, config, async_add_entries, discovery_info=None):
 	"""Setup the sensor platform."""
+
+	logger.debug(f"async_setup_platform started - {config}")
+
 	async_add_entries([AtlasSensor(
 		name=config.get(CONF_NAME),
 		port=config.get(CONF_PORT),
 		offset=config.get(CONF_OFFSET),
 		scale=config.get(CONF_SCALE)
 	)])
+
+	logger.debug(f"async_setup_platform finished")
+
 
 class AtlasSensor(Entity):
 	"""Representation of a Sensor."""
@@ -88,12 +94,15 @@ class AtlasSensor(Entity):
 		self._port_number = int(port, 0)
 
 	async def async_added_to_hass(self):
+		logger.debug(f"{self._name}({self._port_name}) ==> async_added_to_hass - started")
 		# Identifiers: [ name (from I?), units, icon, auto_sleep ]
+
 		if self._scale == 'f':
 			temp_uom = UnitOfTemperature.FAHRENHEIT
 		else:
 			# default to CELSIUS
 			temp_uom = UnitOfTemperature.CELSIUS
+
 		temp = ['temperature', temp_uom, 'mdi:coolant-temperature', 1]
 		ezos = {
 			"ph": ['ph', 'pH', 'mdi:alpha-h-circle', 1],
@@ -107,10 +116,10 @@ class AtlasSensor(Entity):
 			"pmpl": ['pump', 'ml','mdi:engine',0]
 		}
 
-		logger.debug("Checking port %s", self._port_number)
+		logger.debug(f"{self._name}({self._port_name}) ==> Checking port {self._port_number}")
 		if self._port_number > 0:
 			self.io_mode = 1 # switch to I2C communication
-			logger.info("I2C for Atlas EZO @%02x", self._port_name)
+			logger.info(f"{self._name}({self._port_name}) ==> I2C for Atlas EZO port({self._port_number})")
 			self.file_read = io.open(self.default_i2dev, "rb", buffering=0)
 			self.file_write = io.open(self.default_i2dev, "wb", buffering=0)
 
@@ -119,7 +128,7 @@ class AtlasSensor(Entity):
 
 		else:
 			self.io_mode = 0 # serial
-			logger.info("Serial for Atlas EZO @%s", self._port_number)
+			logger.info(f"{self._name}({self._port_name}) ==> Serial for Atlas EZO port({self._port_number})")
 			self.ser = serial.Serial(port=self._port_name, baudrate=9600, timeout=3, write_timeout=3)
 
 			# Reset buffer
@@ -136,7 +145,7 @@ class AtlasSensor(Entity):
 		self._ezo_dev = None
 		for i in range(5):
 			ezo = await self._read("I")
-			logger.debug("I -> check: " + ezo)
+			logger.debug(f"{self._name}({self._port_name}) ==> I -> check: " + ezo)
 			if ezo is not None:
 				ezo = ezo.lower().split(',')
 				if len(ezo)>2 and ezo[1] in ezos:
@@ -145,14 +154,20 @@ class AtlasSensor(Entity):
 					self._ezo_icon = ezos[ezo[1]][2]
 					self.auto_sleep = ezos[ezo[1]][3]
 					self._ezo_fwversion = ezo[2]
-					self._name += ("_" + self._ezo_dev)
-					logger.info("Atlas EZO '%s' version %s detected" % (self._ezo_dev, self._ezo_fwversion))
+					# self._name += ("_" + self._ezo_dev)
+					# self._attr_name = self._name
+					logger.info(
+						f"{self._name}({self._port_name}) ==> Atlas EZO '{self._ezo_dev}' version {self._ezo_fwversion} detected")
 					break
 		if self._ezo_dev.lower() == 'temperature':
 			# set default temperature scale
 			self.i2c_write("S,{:s}".format(self._scale))
 		if self._ezo_dev is None:
-			logger.error("Atlas EZO device error or unsupported: " + ezo)
+			logger.error(f"{self._name}({self._port_name}) ==> Atlas EZO device error or unsupported")
+
+		# self.async_write_ha_state()
+
+		logger.debug(f"{self._name}({self._port_name}) ==> async_added_to_hass - finished")
 
 	def set_i2c_address(self, addr):
 		# set the I2C communications to the slave specified by the address
@@ -164,7 +179,7 @@ class AtlasSensor(Entity):
 
 	def i2c_write(self, cmd):
 		# appends the null character and sends the string over I2C
-		logger.debug("I2C write cmd: " + cmd)
+		logger.debug(f"{self._name}({self._port_name}) ==> I2C write cmd: {cmd}")
 		cmd += "\00"
 		cmd = cmd.encode()
 		return self.file_write.write(cmd)
@@ -173,13 +188,15 @@ class AtlasSensor(Entity):
 		# reads a specified number of bytes from I2C, then parses and displays the result
 		res = self.file_read.read(num_of_bytes)         # read from the board
 		response = list(filter(lambda x: x != '\x00', res))     # remove the null characters to get the response
+		logger.debug(f"{self._name}({self._port_name}) ==> I2C read response: {str(response)}")
 		if response[0] == 1:             # if the response isn't an error
 			# change MSB to 0 for all received characters except the first and get a list of characters
 			char_list = map(lambda x: chr(x & ~0x80), list(response[1:]))
 			# NOTE: having to change the MSB to 0 is a glitch in the raspberry pi, and you shouldn't have to do this!
 			return ''.join(char_list)     # convert the char list to a string and returns it
 		else:
-			logger.error("I2C read error: " + str(response[0]))
+			char_list = map(lambda x: chr(x & ~0x80), list(response[1:]))
+			logger.error(f"{self._name}({self._port_name}) I2C read error({str(response[0])}) => " + ''.join(char_list))
 			return ''
 
 	async def _read(self,command="R",terminator="\r*OK\r"):
@@ -209,7 +226,7 @@ class AtlasSensor(Entity):
 		try:
 			r = await self._read()
 			self._state = float(r) + self._offset
-			logger.debug("update %s => '%s'" % (self.name, self._state))
+			logger.debug(f"{self._name}({self._port_name}) ==> update state => ({self._state})")
 			if self.auto_sleep==1:
 				await self._read("SLEEP")
 		except Exception as e:

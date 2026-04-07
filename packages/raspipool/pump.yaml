@@ -5,11 +5,11 @@ sensor:
         # at what time is the pump going to run next?
         friendly_name: "Next Cycle pump"
         value_template: >-
-          {% set temp = states('sensor.pool_temp_stat')|float %}
-          {{ ( state_attr('input_datetime.recirculation','timestamp')|float *
-            ( 1 - is_state('input_boolean.turbo','on')|int * states('input_number.turbo')|float * 2 / 300 ) *
+          {% set temp = states('sensor.pool_temp_stat')|float(0.0) %}
+          {{ ( state_attr('input_datetime.recirculation','timestamp')|float(0.0) *
+            ( 1 - is_state('input_boolean.turbo','on')|int * states('input_number.turbo')|float(0.0) * 2 / 300 ) *
             ( temp / [1, ( 9 - temp / 2)]|max ) /
-            ( states('input_number.quality')|float + 6 ) )|round(0) | timestamp_custom('%H:%M', false) }}
+            ( states('input_number.quality')|float(0.0) + 6 ) )|round(0) | timestamp_custom('%H:%M', false) }}
         icon_template: >-
           {% if states('input_number.cycle')|int < 0 %}
             mdi:water-off
@@ -28,7 +28,7 @@ sensor:
         unit_of_measurement: 'h'
         friendly_name: "Pump Run Time"
         value_template: >-
-          {{[0.0, (states('sensor.pool_temp')|float/10 + states.input_datetime.recirculation.attributes.timestamp | timestamp_custom('%H', False)|int - 7)|round(2)] | max}}
+          {{[0.0, (states('sensor.pool_temp')|float(0.0)/10 + states.input_datetime.recirculation.attributes.timestamp | timestamp_custom('%H', False)|int - 7)|round(2)] | max}}
 
       ttr_low_speed:
 # how long to run in either single speed or low speed
@@ -36,9 +36,9 @@ sensor:
         unit_of_measurement: 'h'
         value_template: >-
           {% if is_state('input_boolean.turbo', 'on') %}
-            {{(states('sensor.time_to_run_daily')|float / (1/2 + states('input_number.turbo')|int/100))|round(2)}}
+            {{(states('sensor.time_to_run_daily')|float(0.0) / (1/2 + states('input_number.turbo')|int/100))|round(2)}}
           {% else %}
-            {{states('sensor.time_to_run_daily')|float|round(2)}}
+            {{states('sensor.time_to_run_daily')|float(0.0)|round(2)}}
           {% endif %}
       ttr_high_speed:
 # how long to run in high speed
@@ -46,7 +46,7 @@ sensor:
         unit_of_measurement: 'h'
         value_template: >-
           {% if is_state('input_boolean.turbo', 'on') %}
-            {{((states('sensor.time_to_run_daily')|float / (1/2 + states('input_number.turbo')|int/100))* (states('input_number.turbo')|int/100))|round(2)}}
+            {{((states('sensor.time_to_run_daily')|float(0.0) / (1/2 + states('input_number.turbo')|int/100))* (states('input_number.turbo')|int/100))|round(2)}}
           {% else %}
             0.0
           {% endif %}
@@ -253,7 +253,7 @@ automation:
     action:
     - service: switch.turn_on
       entity_id: valve.pool_filter_pump_water
-    - delay: "{{states('input_number.boost_for')|int}}:{{((states('input_number.boost_for')|float % 1)*60)|int}}:0"
+    - delay: "{{states('input_number.boost_for')|int}}:{{((states('input_number.boost_for')|float(0.0) % 1)*60)|int}}:0"
     - service: switch.turn_off
       entity_id: valve.pool_filter_pump_water
     - service: input_number.set_value
