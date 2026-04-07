@@ -1,0 +1,14 @@
+dose_by_volume:
+  name: Dose by Volume
+  description: Dose a specific volume using an Atlas Scientific pump.
+  target:
+    entity:
+      domain: switch
+  fields:
+    volume:
+      name: Volume
+      description: The volume to dose.
+      required: true
+      example: "1.5"
+      selector:
+        text:
