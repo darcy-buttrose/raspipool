@@ -51,6 +51,7 @@ logger:
     homeassistant.components.homekit: debug
     zeroconf: error
     homeassistant.components.websocket_api.http.connection: error
+    custom_components.local_ai.ollama_client: debug
 
 group: !include groups.yaml
 #homekit: !include homekit.yaml

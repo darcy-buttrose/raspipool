@@ -5,9 +5,9 @@ data:
   instructions: >-
     You are a pool chemistry expert and I would like you to balance my pool
     chemistry. My pool currently has a ph of {{ states('sensor.ezo_ph')  }} and
-    an orp of {{ states('sensor.ezo_orp') }}. My pool volume is 30,000 liters.
-    How many millaliters of muriatic acid and liquid chlorine do I need to put in
-    the pool and how long I should wait for the chemicals to have the desired effect.
+    an orp of {{ states('sensor.ezo_orp') }}. The optimum ph for my pool is 7.5 and the optimum orp for my pool is 650. My pool volume is 30,000 liters.
+    How many milliliters of muriatic acid and liquid chlorine do I need to put in
+    the pool and how long should I wait for the chemicals to have the desired effect.
   structure:
     original_ph:
       description: The current ph of the pool

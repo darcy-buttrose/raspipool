@@ -1,1 +1,0 @@
-"""The Strands AI integration."""
