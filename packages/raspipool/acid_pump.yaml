@@ -3,15 +3,24 @@ switch:
     port: 0x6f # 111
     name: 'acid_pump'
 
-sensor:
-  - platform: template
-    sensors:
-      time_since_acid_dose_window_change:
-        value_template: >
+template:
+  - sensor:
+      - name: time_since_acid_dose_window_change
+        state: >
           {{ (((now().timestamp() | float) - (states.input_boolean.auto_acid_dosing_window.last_changed.timestamp() | float)) / 60) | float }}
-      distance_from_acid_dose_window_boundary:
-        value_template: >-
+      - name: distance_from_acid_dose_window_boundary
+        state: >-
           {{ ( ( states('sensor.time_since_acid_dose_window_change') | float ) % ( ( states('input_number.auto_acid_dosing_spacing') | float )) ) | int }}
+
+  - binary_sensor:
+      - name: acid
+        friendly_name: "Acid pump"
+        device_class: plug
+        state: "{{ is_state('switch.acid_pump', True) }}"
+        icon: >-
+          {% if is_state('input_boolean.lock_acid', 'on') %}
+            mdi:lock
+          {% endif %}
 
 
 input_boolean:
@@ -21,21 +30,6 @@ input_boolean:
     name: Auto Dose Acid Window
   dummy_auto_acid_dose:
     name: Dummy Auto Dose Acid
-
-binary_sensor:
-  - platform: template
-    sensors:
-      acid:
-        friendly_name: "Acid pump"
-#        entity_id:
-#          - switch.ph
-#          - input_boolean.lock_acid
-        device_class: plug
-        value_template: "{{ is_state('switch.acid_pump', True) }}"
-        icon_template: >-
-          {% if is_state('input_boolean.lock_acid', 'on') %}
-            mdi:lock
-          {% endif %}
 
 input_number:
   acid_dosing_amount:

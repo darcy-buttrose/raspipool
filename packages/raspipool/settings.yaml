@@ -50,16 +50,15 @@ input_boolean:
     name: Flow sensor present
     initial: false
 
-sensor:
-  - platform: template
-    sensors:
-      simple_date:
+template:
+  - sensor:
+      - name: simple_date
         friendly_name: "Date"
-        value_template: >-
+        state: >-
           {{as_timestamp(now()) | timestamp_custom('%d/%m')}}
-      simple_time:
+      - name: simple_time
         friendly_name: "Time"
-        value_template: "{{as_timestamp(now()) | timestamp_custom('%H:%M')}}"
+        state: "{{as_timestamp(now()) | timestamp_custom('%H:%M')}}"
 
 automation:
 
@@ -76,50 +75,50 @@ automation:
       data:
         entity_id: input_boolean.factory_started
     - service: input_number.set_value
-      data_template:
+      data:
         entity_id: input_number.capacity_metric
         value: 50
     - service: input_number.set_value
-      data_template:
+      data:
         entity_id: input_number.quality
         value: 4
     - service: input_number.set_value
-      data_template:
+      data:
         entity_id: input_number.chlorine_tank
         value: 20
     - service: input_number.set_value
-      data_template:
+      data:
         entity_id: input_number.chlorine_concentration
         value: 5
     - service: input_number.set_value
-      data_template:
+      data:
         entity_id: input_number.chlorine_speed
         value: 25
     - service: input_number.set_value
-      data_template:
+      data:
         entity_id: input_number.fc_target
         value: 1.5
     - service: input_number.set_value
-      data_template:
+      data:
         entity_id: input_number.e_fc_adjust
         value: 0
     - service: input_number.set_value
-      data_template:
+      data:
         entity_id: input_number.ph_target
         value: 7.2
     - service: input_number.set_value
-      data_template:
+      data:
         entity_id: input_number.acid_tank
         value: 10
     - service: input_number.set_value
-      data_template:
+      data:
         entity_id: input_number.acid_concentration
         value: 20
     - service: input_number.set_value
-      data_template:
+      data:
         entity_id: input_number.acid_speed
         value: 25
     - service: input_datetime.set_datetime
-      data_template:
+      data:
         entity_id: input_datetime.recirculation
         time: 08:00:00

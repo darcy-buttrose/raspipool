@@ -1,16 +1,15 @@
-sensor:
-  - platform: template
-    sensors:
-      cycle_pool:
+template:
+  - sensor:
+      - name: cycle_pool
         # at what time is the pump going to run next?
         friendly_name: "Next Cycle pump"
-        value_template: >-
+        state: >-
           {% set temp = states('sensor.pool_temp_stat')|float(0.0) %}
           {{ ( state_attr('input_datetime.recirculation','timestamp')|float(0.0) *
             ( 1 - is_state('input_boolean.turbo','on')|int * states('input_number.turbo')|float(0.0) * 2 / 300 ) *
             ( temp / [1, ( 9 - temp / 2)]|max ) /
             ( states('input_number.quality')|float(0.0) + 6 ) )|round(0) | timestamp_custom('%H:%M', false) }}
-        icon_template: >-
+        icon: >-
           {% if states('input_number.cycle')|int < 0 %}
             mdi:water-off
           {% elif states('input_number.cycle')|int < 240 %}
@@ -20,31 +19,31 @@ sensor:
           {% else %}
             mdi:weather-sunny
           {% endif %}
-      time_to_run_daily:
+      - name: time_to_run_daily
 # how long pump needs to run (single speed) to achieve turnover
 # compensated for temperature
 # time_to_run_daily = temp(F)/5 + recirc - 14 for a slope of 2h/10 degrees F
 # time_to_run_daily = temp(F)/10 + recirc - 7 for a slope of 1h/10 degrees F
         unit_of_measurement: 'h'
         friendly_name: "Pump Run Time"
-        value_template: >-
+        state: >-
           {{[0.0, (states('sensor.pool_temp')|float(0.0)/10 + states.input_datetime.recirculation.attributes.timestamp | timestamp_custom('%H', False)|int - 7)|round(2)] | max}}
 
-      ttr_low_speed:
+      - name: ttr_low_speed
 # how long to run in either single speed or low speed
         friendly_name: "Run Time"
         unit_of_measurement: 'h'
-        value_template: >-
+        state: >-
           {% if is_state('input_boolean.turbo', 'on') %}
             {{(states('sensor.time_to_run_daily')|float(0.0) / (1/2 + states('input_number.turbo')|int/100))|round(2)}}
           {% else %}
             {{states('sensor.time_to_run_daily')|float(0.0)|round(2)}}
           {% endif %}
-      ttr_high_speed:
+      - name: ttr_high_speed
 # how long to run in high speed
         friendly_name: "High Speed Run Time"
         unit_of_measurement: 'h'
-        value_template: >-
+        state: >-
           {% if is_state('input_boolean.turbo', 'on') %}
             {{((states('sensor.time_to_run_daily')|float(0.0) / (1/2 + states('input_number.turbo')|int/100))* (states('input_number.turbo')|int/100))|round(2)}}
           {% else %}
@@ -92,7 +91,7 @@ automation:
     # decrease the out of order days, don't run if "out of order"
     # TODO - rework this, should be a switch
     - service: input_number.set_value
-      data_template:
+      data:
         entity_id: input_number.out_of_order
         value: "{{ [ -1, (states('input_number.out_of_order')|int - 1) ] | max }}"
     - condition: numeric_state
@@ -110,21 +109,27 @@ automation:
       to: 'open'
     condition: []
     action:
-    - entity_id: automation.ph_bad
-      service: automation.turn_on
-    - entity_id: automation.orp_bad
-      service: automation.turn_on
+    - service: automation.turn_on
+      target:
+        entity_id: automation.ph_bad
+    - service: automation.turn_on
+      target:
+        entity_id: automation.orp_bad
     # wait for the pump to run for 15 mins before starting chemicals
     - delay: 00:15:00
     - service: automation.trigger
-      entity_id: automation.bleach_set
+      target:
+        entity_id: automation.bleach_set
     - service: automation.trigger
-      entity_id: automation.bleach_inject
+      target:
+        entity_id: automation.bleach_inject
     - delay: 00:05:00
     - service: automation.trigger
-      entity_id: automation.muriatic_set
+      target:
+        entity_id: automation.muriatic_set
     - service: automation.trigger
-      entity_id: automation.muriatic_inject
+      target:
+        entity_id: automation.muriatic_inject
 
   - alias: help_prime
     # when the pump starts, turn on the turbo for a few minutes (to help priming)
@@ -143,10 +148,12 @@ automation:
         seconds: 10
     action:
     - service: switch.turn_on
-      entity_id: switch.turbo
+      target:
+        entity_id: switch.turbo
     - delay: 00:10:00
     - service: switch.turn_off
-      entity_id: switch.turbo
+      target:
+        entity_id: switch.turbo
 
   - alias: pump_stop
   # ensure injection is stopped when pump stops
@@ -157,20 +164,27 @@ automation:
     condition: []
     action:
     - service: switch.turn_off
-      entity_id: switch.turbo
+      target:
+        entity_id: switch.turbo
     - service: switch.turn_off
-      entity_id: switch.ph
+      target:
+        entity_id: switch.ph
     - service: switch.turn_off
-      entity_id: switch.orp
+      target:
+        entity_id: switch.orp
     # interrupt any automations that are running
     - service: automation.turn_off
-      entity_id: automation.when_pump_starts
+      target:
+        entity_id: automation.when_pump_starts
     - service: automation.turn_on
-      entity_id: automation.when_pump_starts
+      target:
+        entity_id: automation.when_pump_starts
     - service: automation.turn_off
-      entity_id: automation.help_prime
+      target:
+        entity_id: automation.help_prime
     - service: automation.turn_on
-      entity_id: automation.help_prime
+      target:
+        entity_id: automation.help_prime
 
   - alias: check_cummulative_time_low
     # stop the pump if it ran enough
@@ -185,11 +199,12 @@ automation:
         state: "Schedule"
     action:
     - service: notify.notify
-      data_template:
+      data:
         message: 'TODO'
         title: "TODO: pump ran more than the required {{states('sensor.ttr_low_speed')}}"
     - service: switch.turn_off
-      entity_id: valve.pool_filter_pump_water
+      target:
+        entity_id: valve.pool_filter_pump_water
 
   - alias: check_cummulative_time_high
     # stop the pump if it ran enough
@@ -204,11 +219,12 @@ automation:
       value_template: "{{ states('sensor.cummulated_flow_high') > states('sensor.ttr_high_speed') }}"
     action:
       - service: notify.notify
-        data_template:
+        data:
           message: 'TODO'
           title: "TODO: high speed pump ran more than the required {{states('sensor.ttr_high_speed')}}"
       - service: switch.turn_off
-        entity_id: switch.turbo
+        target:
+          entity_id: switch.turbo
 
 
   - alias: every_2_min
@@ -236,11 +252,14 @@ automation:
               above: 0
     action:
     - service: homeassistant.update_entity
-      entity_id: sensor.ezo_ph
+      target:
+        entity_id: sensor.ezo_ph
     - service: homeassistant.update_entity
-      entity_id: sensor.pool_temperature
+      target:
+        entity_id: sensor.pool_temperature
     - service: homeassistant.update_entity
-      entity_id: sensor.ezo_orp
+      target:
+        entity_id: sensor.ezo_orp
 
 
   - alias: pump_on_for
@@ -252,10 +271,12 @@ automation:
     condition: []
     action:
     - service: switch.turn_on
-      entity_id: valve.pool_filter_pump_water
+      target:
+        entity_id: valve.pool_filter_pump_water
     - delay: "{{states('input_number.boost_for')|int}}:{{((states('input_number.boost_for')|float(0.0) % 1)*60)|int}}:0"
     - service: switch.turn_off
-      entity_id: valve.pool_filter_pump_water
+      target:
+        entity_id: valve.pool_filter_pump_water
     - service: input_number.set_value
       data:
         entity_id: input_number.boost_for

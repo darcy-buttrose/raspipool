@@ -1,15 +1,13 @@
-sensor:
-# Estimated sensor of effective Free Chlorine
-  - platform: template
-    sensors:
-      e_fc:
-        value_template: >-
+template:
+  - sensor:
+      - name: e_fc
+        state: >-
           {{ (0.23 * (1 + states('input_number.e_fc_adjust')|float(0.0) / 100 ) *
           ( 14 - states('sensor.ph')|float(0.0)) ** ( 1 / (400 - states('sensor.orp')|float(0.0)) ) *
           ([4.2, states('sensor.ph')|float(0.0)]|max - 4.1) ** ( ( states('sensor.orp')|float(0.0) - 516)/145) +
           10.0 ** ( (states('sensor.orp')|float(0.0) + states('sensor.ph')|float(0.0) * 70 - 1282) / 40 ) ) |round(1) }}
         unit_of_measurement: ppm
-        icon_template: mdi:react
+        icon: mdi:react
         friendly_name: "Estimated FC"
         # TODO: This can determine an error:
         # ZeroDivisionError: 0.0 cannot be raised to a negative power
@@ -77,4 +75,5 @@ automation:
     condition: []
     action:
       - service: automation.trigger
-        entity_id: automation.chlorine_set
+        target:
+          entity_id: automation.chlorine_set

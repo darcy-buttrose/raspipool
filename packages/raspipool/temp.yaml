@@ -23,45 +23,74 @@ sensor:
     state_characteristic: mean
     sampling_size: 6
 
-  - platform: template
-    sensors:
-      pool_temp:
+template:
+  - sensor:
+      - name: pool_temp
         unit_of_measurement: 'C'
-        value_template: >
+        state: >
           {% if is_state('sensor.pool_temperature', 'unknown') %}
             0
           {% else %}
             {{ states('sensor.pool_temperature') }}
           {% endif %}
-      roof_temp:
+      - name: roof_temp
         unit_of_measurement: 'C'
-        value_template: >
+        state: >
           {% if is_state('sensor.roof_temperature', 'unknown') %}
             0
           {% else %}
             {{ states('sensor.roof_temperature') }}
           {% endif %}
-      temp_check_window:
-        value_template: >
+      - name: temp_check_window
+        state: >
           {{ states('input_number.temp_check_window') | float  }}
-      temp_check_delay:
-        value_template: >
+      - name: temp_check_delay
+        state: >
           {{ states('input_number.temp_check_delay') | float }}
-      minutes_since_solar_pump_change:
-        value_template: >
+      - name: minutes_since_solar_pump_change
+        state: >
           {{ (((now().timestamp() | float) - (states.input_boolean.solar_pump_on.last_changed.timestamp() | float)) / 60) | int }}
-      distance_from_window_boundary:
-        value_template: >-
+      - name: distance_from_window_boundary
+        state: >-
           {{ (( states('sensor.minutes_since_solar_pump_change') | float ) % ( states('input_number.temp_check_window') | float)) | int }}
-      temp_range_low:
-        value_template: >-
+      - name: temp_range_low
+        state: >-
           {{ (states('input_number.temp_range_low') | float) }}
-      temp_range_high:
-        value_template: >-
+      - name: temp_range_high
+        state: >-
           {{ (states('input_number.temp_range_high') | float) }}
-      pool_temp_float:
-        value_template: >-
+      - name: pool_temp_float
+        state: >-
           {{ (states('sensor.pool_temp') | float) }}
+
+  - binary_sensor:
+      - name: pool_temp_threshold
+        state: >
+          {{ ((((states('input_number.temp_range_low') | float) < (states('sensor.pool_temp') | float)) and ((states('input_number.temp_range_high') | float) > (states('sensor.pool_temp') | float) )))}}
+      - name: pool_temp_to_high
+        state: >
+          {{ (states('input_number.temp_range_high') | float) < (states('sensor.pool_temp') | float) }}
+      - name: pool_temp_to_low
+        state: >
+          {{ (states('input_number.temp_range_low') | float) > (states('sensor.pool_temp') | float) }}
+      - name: pool_temp_higher_than_roof_temp
+        state: >
+          {{ (states('sensor.roof_temp') | float) < (states('sensor.pool_temp') | float) }}
+      - name: pool_temp_check
+        state: >
+          {{ (states('sensor.temp_check_delay') | float) < (states('sensor.distance_from_window_boundary') | float) }}
+      - name: on_window
+        state: >
+          {{ states('sensor.distance_from_window_boundary') | int == 0 }}
+      - name: turn_solar_pump_off
+        state: >-
+          {{ is_state('binary_sensor.pool_temp_check','on') and (is_state('binary_sensor.pool_temp_to_high','on') or is_state('sensor.pool_temp_higher_than_roof_temp', 'on') ) }}
+      - name: solar_pump_running
+        state: >-
+          {{ states('input_boolean.solar_pump_running') }}
+      - name: dummy_pump
+        state: >-
+          {{ states('input_boolean.dummy_pump') }}
 
 
 input_number:
@@ -111,38 +140,6 @@ input_boolean:
   dummy_pump:
     initial: false
 
-binary_sensor:
-
-  - platform: template
-    sensors:
-      pool_temp_threshold:
-        value_template: >
-          {{ ((((states('input_number.temp_range_low') | float) < (states('sensor.pool_temp') | float)) and ((states('input_number.temp_range_high') | float) > (states('sensor.pool_temp') | float) )))}}
-      pool_temp_to_high:
-        value_template: >
-          {{ (states('input_number.temp_range_high') | float) < (states('sensor.pool_temp') | float) }}
-      pool_temp_to_low:
-        value_template: >
-          {{ (states('input_number.temp_range_low') | float) > (states('sensor.pool_temp') | float) }}
-      pool_temp_higher_than_roof_temp:
-        value_template: >
-          {{ (states('sensor.roof_temp') | float) < (states('sensor.pool_temp') | float) }}
-      pool_temp_check:
-        value_template: >
-          {{ (states('sensor.temp_check_delay') | float) < (states('sensor.distance_from_window_boundary') | float) }}
-      on_window:
-        value_template: >
-          {{ states('sensor.distance_from_window_boundary') | int == 0 }}
-      turn_solar_pump_off:
-        value_template: >-
-          {{ is_state('binary_sensor.pool_temp_check','on') and (is_state('binary_sensor.pool_temp_to_high','on') or is_state('sensor.pool_temp_higher_than_roof_temp', 'on') ) }}
-      solar_pump_running:
-        value_template: >-
-          {{ states('input_boolean.solar_pump_running') }}
-      dummy_pump:
-        value_template: >-
-          {{ states('input_boolean.dummy_pump') }}
-
 automation:
   - alias: Solar Pump On
     trigger:
@@ -150,15 +147,17 @@ automation:
         value_template: "{{ is_state('binary_sensor.on_window', 'on') and is_state('input_boolean.solar_pump_on', 'on') and is_state('input_boolean.solar_pump_running', 'off') }}"
     condition: []
     action:
-      - entity_id: input_boolean.solar_pump_running
-        service: input_boolean.turn_on
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.solar_pump_running
   - alias: Solar Pump Off
     trigger:
       - platform: template
         value_template: "{{ is_state('binary_sensor.pool_temp_check','on') and is_state('binary_sensor.pool_temp_threshold','off') }}"
     action:
-      - entity_id: input_boolean.solar_pump_running
-        service: input_boolean.turn_off
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.solar_pump_running
 
   - alias: Solar Pump Off Imediate
     trigger:
@@ -166,8 +165,9 @@ automation:
         value_template: "{{ is_state('input_boolean.solar_pump_on', 'off') }}"
     condition: []
     action:
-      - entity_id: input_boolean.solar_pump_running
-        service: input_boolean.turn_off
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.solar_pump_running
 
   - alias: Solar Pump Maint On Imediate
     trigger:
@@ -175,8 +175,9 @@ automation:
         value_template: "{{ is_state('input_boolean.solar_pump_maint', 'on') }}"
     condition: []
     action:
-      - entity_id: input_boolean.solar_pump_running
-        service: input_boolean.turn_on
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.solar_pump_running
 
   - alias: Solar Pump Maint Off Imediate
     trigger:
@@ -184,8 +185,9 @@ automation:
         value_template: "{{ is_state('input_boolean.solar_pump_maint', 'off') }}"
     condition: []
     action:
-      - entity_id: input_boolean.solar_pump_running
-        service: input_boolean.turn_off
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.solar_pump_running
 
   - alias: Real Solar Pump On
     trigger:
@@ -194,9 +196,11 @@ automation:
     condition: []
     action:
       - service: input_boolean.turn_on
-        entity_id: input_boolean.dummy_pump
+        target:
+          entity_id: input_boolean.dummy_pump
       - service: valve.open_valve
-        entity_id: valve.pool_solar_pump_water
+        target:
+          entity_id: valve.pool_solar_pump_water
 
 
   - alias: Real Solar Pump Off
@@ -206,8 +210,8 @@ automation:
     condition: []
     action:
       - service: input_boolean.turn_off
-        entity_id: input_boolean.dummy_pump
+        target:
+          entity_id: input_boolean.dummy_pump
       - service: valve.close_valve
-        entity_id: valve.pool_solar_pump_water
-
-
+        target:
+          entity_id: valve.pool_solar_pump_water

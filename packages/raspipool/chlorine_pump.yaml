@@ -3,15 +3,25 @@ switch:
     port: 0x6d # 109
     name: 'chlorine_pump'
 
-sensor:
-  - platform: template
-    sensors:
-      time_since_chlorine_dose_window_change:
-        value_template: >
+template:
+  - sensor:
+      - name: time_since_chlorine_dose_window_change
+        state: >
           {{ (((now().timestamp() | float) - (states.input_boolean.auto_chlorine_dosing_window.last_changed.timestamp() | float)) / 60) | float }}
-      distance_from_chlorine_dose_window_boundary:
-        value_template: >-
+      - name: distance_from_chlorine_dose_window_boundary
+        state: >-
           {{ ( ( states('sensor.time_since_chlorine_dose_window_change') | float ) % ( ( states('input_number.auto_chlorine_dosing_spacing') | float )) ) | int }}
+
+  - binary_sensor:
+      - name: chlorine
+        friendly_name: "Chlorine pump"
+        device_class: plug
+        state: "{{ is_state('switch.chlorine_pump', 'on') }}"
+        icon: >-
+          {% if is_state('input_boolean.lock_chlorine', 'on') %}
+            mdi:lock
+          {% endif %}
+
 
 input_boolean:
   lock_chlorine:
@@ -20,22 +30,6 @@ input_boolean:
     name: Auto Dose Chlorine Window
   daily_chlorine_dosing_active:
     name: Daily Chlorine Dosing Active
-
-binary_sensor:
-  - platform: template
-    sensors:
-      chlorine:
-        friendly_name: "Chlorine pump"
-#        entity_id:
-#          - switch.orp
-#          - input_boolean.lock_chlorine
-        device_class: plug
-        value_template: "{{ is_state('switch.chlorine_pump', 'on') }}"
-        icon_template: >-
-          {% if is_state('input_boolean.lock_chlorine', 'on') %}
-            mdi:lock
-          {% endif %}
-
 
 input_number:
   chlorine_dosing_amount:

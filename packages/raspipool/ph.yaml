@@ -1,4 +1,5 @@
 sensor:
+# Atlas Resistance Temperature Detector (RTD)
   - platform: atlas_scientific
 # For serial ports use:
 #   port: /dev/ttyUSB0
@@ -16,11 +17,11 @@ sensor:
     state_characteristic: mean
     sampling_size: 6
 
-  - platform: template
-    sensors:
-      ph:
+template:
+  - sensor:
+      - name: ph
         unit_of_measurement: 'pH'
-        value_template: >
+        state: >
           {% if is_state('sensor.ezo_ph', 'unknown') %}
             0
           {% else %}
@@ -56,7 +57,8 @@ automation:
       state: 'off'
     action:
     - service: switch.turn_off
-      entity_id: switch.ph
+      target:
+        entity_id: switch.ph
 
   - alias: ph_high
     trigger:
@@ -67,10 +69,10 @@ automation:
         hours: 24
     condition: []
     action:
-    - data_template:
+    - service: notify.notify
+      data:
         message: '{{trigger.to_state.attributes.friendly_name}}: {{trigger.to_state.state}}'
         title: 'pH high ({{trigger.to_state.state}})!'
-      service: notify.notify
 
   - alias: ph_low
     trigger:
@@ -81,10 +83,10 @@ automation:
         hours: 24
     condition: []
     action:
-    - data_template:
+    - service: notify.notify
+      data:
         message: '{{trigger.to_state.attributes.friendly_name}}: {{trigger.to_state.state}}'
         title: 'pH low ({{trigger.to_state.state}})!'
-      service: notify.notify
 
   - alias: ph_bad
     trigger:
@@ -93,14 +95,15 @@ automation:
     condition: []
     action:
     - service: notify.notify
-      data_template:
+      data:
         message: 'It varied between {{state_attr("sensor.ph", "min_value")}} and 
           {{state_attr("sensor.ph", "max_value")}} over the past 
           {{(state_attr("sensor.ph", "sampling_size")*30/60)|int}} minutes'
           # scan_interval: 30 is the scan_interval for the orp probe (orp.yaml) 
         title: 'pH probe may need calibration!'
     - service: automation.turn_off
-      entity_id: automation.ph_bad
+      target:
+        entity_id: automation.ph_bad
 
   - alias: ph_target
     trigger:
@@ -109,4 +112,5 @@ automation:
     condition: []
     action:
       - service: automation.trigger
-        entity_id: automation.acid_set
+        target:
+          entity_id: automation.acid_set

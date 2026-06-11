@@ -11,11 +11,11 @@ sensor:
     state_characteristic: mean
     sampling_size: 20
 
-  - platform: template
-    sensors:
-      tds:
+template:
+  - sensor:
+      - name: tds
         unit_of_measurement: 'ppm'
-        value_template: >
+        state: >
           {% if is_state('sensor.ezo_conductivity', 'unknown') %}
             0
           {% else %}
