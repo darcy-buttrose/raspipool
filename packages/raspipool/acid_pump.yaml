@@ -14,7 +14,6 @@ template:
 
   - binary_sensor:
       - name: acid
-        friendly_name: "Acid pump"
         device_class: plug
         state: "{{ is_state('switch.acid_pump', True) }}"
         icon: >-

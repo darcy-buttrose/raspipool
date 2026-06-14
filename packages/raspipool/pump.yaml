@@ -2,7 +2,6 @@ template:
   - sensor:
       - name: cycle_pool
         # at what time is the pump going to run next?
-        friendly_name: "Next Cycle pump"
         state: >-
           {% set temp = states('sensor.pool_temp_stat')|float(0.0) %}
           {{ ( state_attr('input_datetime.recirculation','timestamp')|float(0.0) *
@@ -25,13 +24,11 @@ template:
 # time_to_run_daily = temp(F)/5 + recirc - 14 for a slope of 2h/10 degrees F
 # time_to_run_daily = temp(F)/10 + recirc - 7 for a slope of 1h/10 degrees F
         unit_of_measurement: 'h'
-        friendly_name: "Pump Run Time"
         state: >-
           {{[0.0, (states('sensor.pool_temp')|float(0.0)/10 + states.input_datetime.recirculation.attributes.timestamp | timestamp_custom('%H', False)|int - 7)|round(2)] | max}}
 
       - name: ttr_low_speed
 # how long to run in either single speed or low speed
-        friendly_name: "Run Time"
         unit_of_measurement: 'h'
         state: >-
           {% if is_state('input_boolean.turbo', 'on') %}
@@ -41,7 +38,6 @@ template:
           {% endif %}
       - name: ttr_high_speed
 # how long to run in high speed
-        friendly_name: "High Speed Run Time"
         unit_of_measurement: 'h'
         state: >-
           {% if is_state('input_boolean.turbo', 'on') %}

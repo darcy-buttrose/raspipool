@@ -53,11 +53,9 @@ input_boolean:
 template:
   - sensor:
       - name: simple_date
-        friendly_name: "Date"
         state: >-
           {{as_timestamp(now()) | timestamp_custom('%d/%m')}}
       - name: simple_time
-        friendly_name: "Time"
         state: "{{as_timestamp(now()) | timestamp_custom('%H:%M')}}"
 
 automation:

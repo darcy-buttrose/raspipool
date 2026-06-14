@@ -36,7 +36,6 @@ input_boolean:
 template:
   - binary_sensor:
       - name: bleach
-        friendly_name: "Chlorine pump"
         device_class: plug
         state: "{{ is_state('switch.orp', 'on') }}"
         icon: >-
@@ -44,7 +43,6 @@ template:
             mdi:lock
           {% endif %}
       - name: muriatic
-        friendly_name: "Acid pump"
         device_class: plug
         state: "{{ is_state('switch.ph', 'on') }}"
         icon: >-

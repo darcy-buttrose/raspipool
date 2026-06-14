@@ -8,7 +8,6 @@ template:
           10.0 ** ( (states('sensor.orp')|float(0.0) + states('sensor.ph')|float(0.0) * 70 - 1282) / 40 ) ) |round(1) }}
         unit_of_measurement: ppm
         icon: mdi:react
-        friendly_name: "Estimated FC"
         # TODO: This can determine an error:
         # ZeroDivisionError: 0.0 cannot be raised to a negative power
         # ([4.1, states('sensor.ph')|float(0.0)]|max - 4.1) ** ( ( states('sensor.orp')|float(0.0) - 516)/145)

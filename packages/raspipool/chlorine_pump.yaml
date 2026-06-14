@@ -14,7 +14,6 @@ template:
 
   - binary_sensor:
       - name: chlorine
-        friendly_name: "Chlorine pump"
         device_class: plug
         state: "{{ is_state('switch.chlorine_pump', 'on') }}"
         icon: >-
